@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba del Carrito | MV Bichota</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; padding: 20px; background: #f5f5f5; }
+        .test-container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        h1 { margin-bottom: 20px; color: #590D22; }
+        .test-section { margin-bottom: 30px; padding: 20px; background: #f9f9f9; border-radius: 12px; }
+        .test-section h2 { font-size: 1.1rem; margin-bottom: 15px; color: #333; }
+        .test-btn { padding: 12px 24px; margin: 5px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .test-btn-primary { background: #C9184A; color: white; }
+        .test-btn-primary:hover { background: #A4133C; }
+        .test-btn-secondary { background: #E8D5E8; color: #590D22; }
+        .test-btn-secondary:hover { background: #D4B8D4; }
+        .test-btn-success { background: #10B981; color: white; }
+        .test-btn-success:hover { background: #059669; }
+        .test-result { margin-top: 15px; padding: 15px; background: white; border-radius: 8px; border-left: 4px solid #10B981; }
+        .test-result.error { border-left-color: #EF4444; }
+        .test-result h3 { font-size: 0.9rem; margin-bottom: 5px; }
+        .test-result p { font-size: 0.85rem; color: #666; }
+        .cart-icon { position: fixed; top: 20px; right: 20px; background: #C9184A; color: white; padding: 15px; border-radius: 50%; cursor: pointer; box-shadow: 0 4px 15px rgba(201,24,74,0.3); }
+        .cart-icon:hover { transform: scale(1.1); }
+        .cart-count-badge { position: absolute; top: -5px; right: -5px; background: #590D22; color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; }
+        .instructions { background: #FEF3C7; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .instructions h3 { color: #92400E; margin-bottom: 10px; }
+        .instructions ol { padding-left: 20px; color: #92400E; }
+        .instructions li { margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Prueba del Carrito MV Bichota</h1>
+        
+        <div class="instructions">
+            <h3>Instrucciones de Prueba:</h3>
+            <ol>
+                <li>Haz clic en "Agregar Producto Individual"</li>
+                <li>Haz clic en el ícono del carrito (esquina superior derecha)</li>
+                <li>Verifica que se abra el carrito</li>
+                <li>Prueba eliminar un producto</li>
+                <li>Agrega un combo y prueba eliminarlo</li>
+            </ol>
+        </div>
+
+        <div class="test-section">
+            <h2>1. Productos Individuales</h2>
+            <button class="test-btn test-btn-primary" onclick="addTestProduct()">
+                Agregar Producto Individual
+            </button>
+            <button class="test-btn test-btn-secondary" onclick="addTestProduct2()">
+                Agregar Producto 2
+            </button>
+        </div>
+
+        <div class="test-section">
+            <h2>2. Combos</h2>
+            <button class="test-btn test-btn-primary" onclick="addTestCombo()">
+                Agregar Combo de Prueba
+            </button>
+        </div>
+
+        <div class="test-section">
+            <h2>3. Acciones del Carrito</h2>
+            <button class="test-btn test-btn-success" onclick="openCart()">
+                Abrir Carrito
+            </button>
+            <button class="test-btn test-btn-secondary" onclick="clearCart()">
+                Vaciar Carrito
+            </button>
+        </div>
+
+        <div class="test-section">
+            <h2>4. Estado del Carrito</h2>
+            <button class="test-btn test-btn-secondary" onclick="checkCartState()">
+                Ver Estado
+            </button>
+            <div id="cartState" class="test-result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>5. Ir a Páginas Reales</h2>
+            <a href="index.html" class="test-btn test-btn-primary">Página Principal</a>
+            <a href="combo-builder.html" class="test-btn test-btn-primary">Arma tu Combo</a>
+            <a href="checkout.html" class="test-btn test-btn-primary">Checkout</a>
+        </div>
+    </div>
+
+    <!-- Cart Icon -->
+    <div class="cart-icon" onclick="openCart()">
+        <i data-lucide="shopping-cart"></i>
+        <span class="cart-count-badge" id="testCartCount">0</span>
+    </div>
+
+    <script src="js/cart.js"></script>
+    <script>
+        // Test products
+        const testProducts = [
+            { id: 'arroz', name: 'Arroz', price: 2.50, unit: 'paquete', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=100&h=100&fit=crop', category: 'alimentos' },
+            { id: 'frijoles', name: 'Frijoles Negros', price: 3.00, unit: 'paquete', image: 'https://images.unsplash.com/photo-1587735243615-c03f25aaff15?w=100&h=100&fit=crop', category: 'alimentos' },
+            { id: 'detergente', name: 'Detergente', price: 3.50, unit: 'unidad', image: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=100&h=100&fit=crop', category: 'aseo' }
+        ];
+
+        let testProductIndex = 0;
+
+        function addTestProduct() {
+            if (window.mvCart) {
+                const product = testProducts[testProductIndex % testProducts.length];
+                window.mvCart.addItem(product);
+                testProductIndex++;
+                updateTestCount();
+            }
+        }
+
+        function addTestProduct2() {
+            if (window.mvCart) {
+                const product = testProducts[2]; // Detergente
+                window.mvCart.addItem(product, 2);
+                updateTestCount();
+            }
+        }
+
+        function addTestCombo() {
+            if (window.mvCart) {
+                const combo = {
+                    name: 'Combo Cumpleaños - 20 personas',
+                    type: 'cumpleanos',
+                    budget: 100,
+                    people: 20,
+                    items: [
+                        { id: 'croquetas', name: 'Croquetas', price: 0.50, quantity: 20 },
+                        { id: 'churros', name: 'Churros', price: 0.75, quantity: 10 },
+                        { id: 'mini-donas', name: 'Mini Donas', price: 0.60, quantity: 15 }
+                    ],
+                    subtotal: 24.50,
+                    discount: 0,
+                    total: 24.50
+                };
+                window.mvCart.addCombo(combo);
+                updateTestCount();
+            }
+        }
+
+        function openCart() {
+            if (window.mvCart) {
+                window.mvCart.toggleCart();
+            }
+        }
+
+        function clearCart() {
+            if (window.mvCart) {
+                if (confirm('¿Vaciar todo el carrito?')) {
+                    window.mvCart.clearCart();
+                    updateTestCount();
+                }
+            }
+        }
+
+        function checkCartState() {
+            const stateDiv = document.getElementById('cartState');
+            if (window.mvCart) {
+                const cart = window.mvCart.cart;
+                const itemCount = window.mvCart.getItemCount();
+                const subtotal = window.mvCart.getSubtotal();
+                
+                stateDiv.innerHTML = `
+                    <h3>✅ Estado del Carrito</h3>
+                    <p><strong>Productos individuales:</strong> ${cart.items.length}</p>
+                    <p><strong>Combos:</strong> ${cart.combos.length}</p>
+                    <p><strong>Total de artículos:</strong> ${itemCount}</p>
+                    <p><strong>Subtotal:</strong> $${subtotal.toFixed(2)}</p>
+                    <p><strong>Items:</strong> ${JSON.stringify(cart.items.map(i => i.name + ' x' + i.quantity))}</p>
+                    <p><strong>Combos:</strong> ${JSON.stringify(cart.combos.map(c => c.name))}</p>
+                `;
+                stateDiv.style.display = 'block';
+                stateDiv.className = 'test-result';
+            }
+        }
+
+        function updateTestCount() {
+            if (window.mvCart) {
+                const count = window.mvCart.getItemCount();
+                document.getElementById('testCartCount').textContent = count;
+            }
+        }
+
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Update count on load
+        setTimeout(updateTestCount, 500);
+    </script>
+</body>
+</html>

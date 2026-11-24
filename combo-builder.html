@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arma tu Combo | MV Bichota</title>
+    <meta name="description" content="Crea tu combo personalizado con los mejores productos. Selecciona, personaliza y pide por WhatsApp.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/combo-builder.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="container">
+            <div class="header__content">
+                <a href="index.html" class="header__logo">
+                    <img src="assets/images/logo.png" alt="MV Bichota" class="logo-img">
+                </a>
+                
+                <nav class="header__nav" id="mainNav">
+                    <a href="index.html#inicio" class="nav-link">Inicio</a>
+                    <a href="index.html#tienda" class="nav-link">Tienda</a>
+                    <a href="combo-builder.html" class="nav-link active">Arma tu Combo</a>
+                    <a href="index.html#nosotros" class="nav-link">Nosotros</a>
+                    <a href="index.html#contacto" class="nav-link">Contacto</a>
+                </nav>
+                
+                <div class="header__actions">
+                    <button class="icon-btn cart-btn" aria-label="Carrito">
+                        <i data-lucide="shopping-cart"></i>
+                        <span class="cart-count">0</span>
+                    </button>
+                </div>
+                
+                <button class="header__hamburger" id="hamburgerBtn" aria-label="Menú">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu__content">
+            <a href="index.html#inicio" class="mobile-link">Inicio</a>
+            <a href="index.html#tienda" class="mobile-link">Tienda</a>
+            <a href="combo-builder.html" class="mobile-link">Arma tu Combo</a>
+            <a href="index.html#nosotros" class="mobile-link">Nosotros</a>
+            <a href="index.html#contacto" class="mobile-link">Contacto</a>
+        </div>
+    </div>
+
+    <main class="combo-builder">
+        <div class="container">
+            <!-- Progress Steps -->
+            <div class="combo-progress">
+                <div class="combo-progress__step active" data-step="1">
+                    <span class="step-number">1</span>
+                    <span class="step-label">Tipo</span>
+                </div>
+                <div class="combo-progress__step" data-step="2">
+                    <span class="step-number">2</span>
+                    <span class="step-label">Presupuesto</span>
+                </div>
+                <div class="combo-progress__step" data-step="3">
+                    <span class="step-number">3</span>
+                    <span class="step-label">Productos</span>
+                </div>
+                <div class="combo-progress__step" data-step="4">
+                    <span class="step-number">4</span>
+                    <span class="step-label">Confirmar</span>
+                </div>
+            </div>
+
+            <!-- Step 1: Combo Type -->
+            <div class="combo-step active" id="comboStep1">
+                <div class="combo-step__header">
+                    <h1 class="combo-step__title">¿Qué tipo de combo necesitas?</h1>
+                    <p class="combo-step__description">Selecciona la categoría que mejor se adapte a lo que buscas</p>
+                </div>
+                
+                <div class="combo-type-grid" id="comboTypeGrid">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+                
+                <div class="combo-step__actions">
+                    <a href="index.html" class="btn btn-outline">
+                        <i data-lucide="arrow-left"></i>
+                        Volver
+                    </a>
+                    <button class="btn btn-primary" id="nextStep1" disabled>
+                        Continuar
+                        <i data-lucide="arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Budget/People -->
+            <div class="combo-step" id="comboStep2">
+                <div class="combo-step__header">
+                    <button class="back-step" id="backStep2">
+                        <i data-lucide="arrow-left"></i>
+                        Atrás
+                    </button>
+                    <h1 class="combo-step__title">Define tu combo</h1>
+                    <p class="combo-step__description">Elige un presupuesto o cantidad de personas</p>
+                </div>
+                
+                <div class="combo-budget-section">
+                    <h2 class="section-title">Presupuesto</h2>
+                    <div class="budget-options" id="budgetOptions">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                    
+                    <div class="custom-budget" id="customBudget" style="display: none;">
+                        <label for="budgetInput">Ingresa tu presupuesto</label>
+                        <div class="budget-input-group">
+                            <span class="currency">$</span>
+                            <input type="number" id="budgetInput" min="1" placeholder="0.00">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="combo-budget-section">
+                    <h2 class="section-title">¿Para cuántas personas?</h2>
+                    <div class="people-options" id="peopleOptions">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="combo-step__actions">
+                    <button class="btn btn-outline" id="backStep2">
+                        <i data-lucide="arrow-left"></i>
+                        Atrás
+                    </button>
+                    <button class="btn btn-primary" id="nextStep2">
+                        Seleccionar Productos
+                        <i data-lucide="arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 3: Product Selection -->
+            <div class="combo-step" id="comboStep3">
+                <div class="combo-step__header">
+                    <button class="back-step" id="backStep3">
+                        <i data-lucide="arrow-left"></i>
+                        Atrás
+                    </button>
+                    <h1 class="combo-step__title">Selecciona tus productos</h1>
+                    <p class="combo-step__description">Agrega los productos que deseas en tu combo</p>
+                </div>
+                
+                <!-- Budget Progress -->
+                <div class="budget-progress" id="budgetProgress">
+                    <div class="budget-progress__info">
+                        <span>Presupuesto: <strong id="budgetDisplay">$0</strong></span>
+                        <span>Seleccionado: <strong id="selectedDisplay">$0</strong></span>
+                        <span>Disponible: <strong id="availableDisplay">$0</strong></span>
+                    </div>
+                    <div class="budget-progress__bar">
+                        <div class="budget-progress__fill" id="budgetFill"></div>
+                    </div>
+                    <div class="budget-warning" id="budgetWarning" style="display: none;">
+                        <i data-lucide="alert-triangle"></i>
+                        Tu combo supera el presupuesto seleccionado
+                    </div>
+                </div>
+                
+                <!-- Category Filters -->
+                <div class="combo-filters">
+                    <button class="filter-btn active" data-category="all">Todos</button>
+                    <button class="filter-btn" data-category="alimentos">Alimentos</button>
+                    <button class="filter-btn" data-category="bebidas">Bebidas</button>
+                    <button class="filter-btn" data-category="confituras">Dulces</button>
+                    <button class="filter-btn" data-category="aseo">Aseo</button>
+                    <button class="filter-btn" data-category="bufet">Bufet</button>
+                </div>
+                
+                <!-- Products Grid -->
+                <div class="combo-products-grid" id="comboProductsGrid">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+                
+                <!-- Suggestions -->
+                <div class="combo-suggestions" id="comboSuggestions" style="display: none;">
+                    <h3>💡 Podrías agregar...</h3>
+                    <div class="suggestions-list" id="suggestionsList">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="combo-step__actions">
+                    <button class="btn btn-outline" id="backStep3">
+                        <i data-lucide="arrow-left"></i>
+                        Atrás
+                    </button>
+                    <button class="btn btn-primary" id="nextStep3">
+                        Ver Resumen
+                        <i data-lucide="arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 4: Confirmation -->
+            <div class="combo-step" id="comboStep4">
+                <div class="combo-step__header">
+                    <button class="back-step" id="backStep4">
+                        <i data-lucide="arrow-left"></i>
+                        Atrás
+                    </button>
+                    <h1 class="combo-step__title">Resumen de tu combo</h1>
+                    <p class="combo-step__description">Revisa los detalles antes de agregar al carrito</p>
+                </div>
+                
+                <div class="combo-summary">
+                    <div class="combo-summary__card">
+                        <div class="combo-summary__header">
+                            <span class="combo-type-icon" id="summaryTypeIcon"></span>
+                            <div>
+                                <h3 id="summaryTypeName">Combo Personalizado</h3>
+                                <p id="summaryTypeDesc"></p>
+                            </div>
+                        </div>
+                        
+                        <div class="combo-summary__details">
+                            <div class="summary-row" id="summaryBudgetRow">
+                                <span>Presupuesto</span>
+                                <span id="summaryBudget">$0</span>
+                            </div>
+                            <div class="summary-row" id="summaryPeopleRow">
+                                <span>Personas</span>
+                                <span id="summaryPeople">No especificado</span>
+                            </div>
+                        </div>
+                        
+                        <div class="combo-summary__items">
+                            <h4>Productos seleccionados</h4>
+                            <ul id="summaryItemsList">
+                                <!-- Will be populated by JavaScript -->
+                            </ul>
+                        </div>
+                        
+                        <div class="combo-summary__totals">
+                            <div class="summary-row">
+                                <span>Subtotal</span>
+                                <span id="summarySubtotal">$0</span>
+                            </div>
+                            <div class="summary-row summary-row--discount" id="summaryDiscountRow" style="display: none;">
+                                <span>Descuento</span>
+                                <span id="summaryDiscount">-$0</span>
+                            </div>
+                            <div class="summary-row summary-row--total">
+                                <span>Total</span>
+                                <span id="summaryTotal">$0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="combo-step__actions">
+                    <button class="btn btn-outline" id="backStep4">
+                        <i data-lucide="arrow-left"></i>
+                        Atrás
+                    </button>
+                    <button class="btn btn-primary" id="addToCartBtn">
+                        <i data-lucide="shopping-cart"></i>
+                        Agregar al Carrito
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <div class="mobile-bottom-nav__content">
+            <a href="index.html#inicio" class="mobile-nav-item">
+                <i data-lucide="home"></i>
+                <span>Inicio</span>
+            </a>
+            <a href="index.html#tienda" class="mobile-nav-item">
+                <i data-lucide="shopping-bag"></i>
+                <span>Productos</span>
+            </a>
+            <a href="combo-builder.html" class="mobile-nav-item mobile-nav-item--combo active">
+                <span>Combo</span>
+            </a>
+            <button class="mobile-nav-item cart-btn">
+                <i data-lucide="shopping-cart"></i>
+                <span>Carrito</span>
+            </button>
+            <a href="index.html#contacto" class="mobile-nav-item">
+                <i data-lucide="menu"></i>
+                <span>Más</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- JavaScript -->
+    <script src="js/cart.js"></script>
+    <script src="js/combo-builder.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

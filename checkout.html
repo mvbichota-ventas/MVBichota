@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | MV Bichota</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/checkout.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="container">
+            <div class="header__content">
+                <a href="index.html" class="header__logo">
+                    <img src="assets/images/logo.png" alt="MV Bichota" class="logo-img">
+                </a>
+                
+                <nav class="header__nav" id="mainNav">
+                    <a href="index.html" class="nav-link">Volver a la Tienda</a>
+                </nav>
+                
+                <div class="header__actions">
+                    <button class="icon-btn cart-btn" aria-label="Carrito">
+                        <i data-lucide="shopping-cart"></i>
+                        <span class="cart-count">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="checkout">
+        <div class="container">
+            <div class="checkout__grid">
+                <!-- Checkout Form -->
+                <div class="checkout__form-section">
+                    <h1 class="checkout__title">Finalizar Pedido</h1>
+                    
+                    <form id="checkoutForm" class="checkout__form">
+                        <!-- Customer Info -->
+                        <div class="form-section">
+                            <h2 class="form-section__title">
+                                <i data-lucide="user"></i>
+                                Datos Personales
+                            </h2>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="name">Nombre completo *</label>
+                                    <input type="text" id="name" name="name" required placeholder="Tu nombre">
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">WhatsApp *</label>
+                                    <input type="tel" id="phone" name="phone" required placeholder="+1 (XXX) XXX-XXXX">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Delivery Info -->
+                        <div class="form-section">
+                            <h2 class="form-section__title">
+                                <i data-lucide="map-pin"></i>
+                                Dirección de Entrega
+                            </h2>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="municipality">Municipio *</label>
+                                    <input type="text" id="municipality" name="municipality" required placeholder="Tu municipio">
+                                </div>
+                                <div class="form-group">
+                                    <label for="address">Dirección *</label>
+                                    <input type="text" id="address" name="address" required placeholder="Calle, número, etc.">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="reference">Referencia</label>
+                                <input type="text" id="reference" name="reference" placeholder="Casa azul, al lado del parque, etc.">
+                            </div>
+                        </div>
+
+                        <!-- Delivery Schedule -->
+                        <div class="form-section">
+                            <h2 class="form-section__title">
+                                <i data-lucide="calendar"></i>
+                                Fecha y Horario de Entrega
+                            </h2>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="deliveryDate">Fecha deseada *</label>
+                                    <input type="date" id="deliveryDate" name="deliveryDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="deliveryTime">Horario preferido</label>
+                                    <select id="deliveryTime" name="deliveryTime">
+                                        <option value="">Seleccionar horario</option>
+                                        <option value="8:00 AM - 10:00 AM">8:00 AM - 10:00 AM</option>
+                                        <option value="10:00 AM - 12:00 PM">10:00 AM - 12:00 PM</option>
+                                        <option value="12:00 PM - 2:00 PM">12:00 PM - 2:00 PM</option>
+                                        <option value="2:00 PM - 4:00 PM">2:00 PM - 4:00 PM</option>
+                                        <option value="4:00 PM - 6:00 PM">4:00 PM - 6:00 PM</option>
+                                        <option value="6:00 PM - 8:00 PM">6:00 PM - 8:00 PM</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payment Method -->
+                        <div class="form-section">
+                            <h2 class="form-section__title">
+                                <i data-lucide="credit-card"></i>
+                                Método de Pago
+                            </h2>
+                            
+                            <div class="payment-methods" id="paymentMethods">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                            
+                            <div class="payment-instructions" id="paymentInstructions" style="display: none;">
+                                <p id="paymentInstructionsText"></p>
+                            </div>
+                        </div>
+
+                        <!-- Comments -->
+                        <div class="form-section">
+                            <h2 class="form-section__title">
+                                <i data-lucide="message-square"></i>
+                                Comentarios Adicionales
+                            </h2>
+                            
+                            <div class="form-group">
+                                <textarea id="comments" name="comments" rows="3" placeholder="Instrucciones especiales, alergias, preferencias..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary btn-block btn-lg" id="submitOrder">
+                            <i data-lucide="message-circle"></i>
+                            Enviar Pedido por WhatsApp
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="checkout__summary-section">
+                    <div class="order-summary">
+                        <h2 class="order-summary__title">Resumen del Pedido</h2>
+                        
+                        <div class="order-summary__items" id="orderItems">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                        
+                        <div class="order-summary__totals">
+                            <div class="summary-row">
+                                <span>Subtotal</span>
+                                <span id="summarySubtotal">$0.00</span>
+                            </div>
+                            <div class="summary-row summary-row--discount" id="summaryDiscountRow" style="display: none;">
+                                <span>Descuento</span>
+                                <span id="summaryDiscount">-$0.00</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Entrega</span>
+                                <span id="summaryDelivery">$5.00</span>
+                            </div>
+                            <div class="summary-row summary-row--surcharge" id="summarySurchargeRow" style="display: none;">
+                                <span>Recargo (<span id="surchargePercent">0</span>%)</span>
+                                <span id="summarySurcharge">$0.00</span>
+                            </div>
+                            <div class="summary-row summary-row--total">
+                                <span>Total</span>
+                                <span id="summaryTotal">$0.00</span>
+                            </div>
+                        </div>
+
+                        <div class="order-summary__actions">
+                            <a href="index.html" class="btn btn-outline btn-block">
+                                <i data-lucide="arrow-left"></i>
+                                Seguir Comprando
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript -->
+    <script src="js/cart.js"></script>
+    <script src="js/checkout.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

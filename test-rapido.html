@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba Rápida del Carrito</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; padding: 20px; background: #f0f0f0; }
+        .container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        h1 { color: #C9184A; margin-bottom: 20px; font-size: 1.5rem; }
+        .btn { display: inline-block; padding: 12px 24px; margin: 5px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; }
+        .btn-primary { background: #C9184A; color: white; }
+        .btn-primary:hover { background: #A4133C; }
+        .btn-secondary { background: #E8D5E8; color: #590D22; }
+        .section { margin: 20px 0; padding: 20px; background: #f9f9f9; border-radius: 12px; }
+        .section h2 { font-size: 1rem; margin-bottom: 15px; }
+        .result { margin-top: 15px; padding: 15px; background: #d4edda; border-radius: 8px; font-size: 14px; }
+        .cart-btn-header { position: fixed; top: 20px; right: 20px; background: #C9184A; color: white; padding: 15px; border-radius: 50%; cursor: pointer; box-shadow: 0 4px 15px rgba(201,24,74,0.4); }
+        .cart-btn-header:hover { transform: scale(1.1); }
+        .badge { position: absolute; top: -5px; right: -5px; background: #590D22; color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛒 Prueba del Carrito MV Bichota</h1>
+        
+        <div class="section">
+            <h2>1. Agregar Productos</h2>
+            <button class="btn btn-primary" onclick="addProduct('Arroz', 2.50)">+ Arroz $2.50</button>
+            <button class="btn btn-primary" onclick="addProduct('Frijoles', 3.00)">+ Frijoles $3.00</button>
+            <button class="btn btn-primary" onclick="addProduct('Pollo', 8.50)">+ Pollo $8.50</button>
+        </div>
+
+        <div class="section">
+            <h2>2. Agregar Combo</h2>
+            <button class="btn btn-secondary" onclick="addCombo()">+ Combo Cumpleaños $50</button>
+        </div>
+
+        <div class="section">
+            <h2>3. Acciones</h2>
+            <button class="btn btn-primary" onclick="openCart()">Abrir Carrito</button>
+            <button class="btn btn-secondary" onclick="showStatus()">Ver Estado</button>
+            <button class="btn btn-secondary" onclick="clearAll()">Vaciar Todo</button>
+        </div>
+
+        <div id="status" class="result" style="display: none;"></div>
+
+        <div class="section">
+            <h2>4. Ir a la Página Real</h2>
+            <a href="index.html" class="btn btn-primary">Página Principal</a>
+        </div>
+    </div>
+
+    <!-- Botón del carrito en la esquina -->
+    <div class="cart-btn-header" onclick="openCart()">
+        <i data-lucide="shopping-cart"></i>
+        <span class="badge" id="cartBadge">0</span>
+    </div>
+
+    <script src="js/cart.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        function addProduct(name, price) {
+            if (window.mvCart) {
+                window.mvCart.addItem({
+                    id: name.toLowerCase(),
+                    name: name,
+                    price: price,
+                    unit: 'unidad',
+                    image: 'https://via.placeholder.com/60?text=' + name,
+                    category: 'alimentos'
+                });
+                updateBadge();
+            } else {
+                alert('El carrito no está inicializado');
+            }
+        }
+
+        function addCombo() {
+            if (window.mvCart) {
+                window.mvCart.addCombo({
+                    name: 'Combo Cumpleaños - 20 personas',
+                    type: 'cumpleanos',
+                    budget: 50,
+                    people: 20,
+                    items: [
+                        { id: 'croquetas', name: 'Croquetas', price: 0.50, quantity: 20 },
+                        { id: 'churros', name: 'Churros', price: 0.75, quantity: 10 }
+                    ],
+                    subtotal: 17.50,
+                    discount: 0,
+                    total: 17.50
+                });
+                updateBadge();
+            }
+        }
+
+        function openCart() {
+            if (window.mvCart) {
+                window.mvCart.toggleCart();
+            }
+        }
+
+        function showStatus() {
+            if (window.mvCart) {
+                const cart = window.mvCart.cart;
+                const status = document.getElementById('status');
+                status.innerHTML = `
+                    <strong>✅ Estado del Carrito:</strong><br>
+                    Productos: ${cart.items.length}<br>
+                    Combos: ${cart.combos.length}<br>
+                    Total: $${window.mvCart.getSubtotal().toFixed(2)}
+                `;
+                status.style.display = 'block';
+            }
+        }
+
+        function clearAll() {
+            if (window.mvCart) {
+                window.mvCart.clearCart();
+                updateBadge();
+                alert('Carrito vaciado');
+            }
+        }
+
+        function updateBadge() {
+            if (window.mvCart) {
+                const count = window.mvCart.getItemCount();
+                document.getElementById('cartBadge').textContent = count;
+            }
+        }
+
+        // Update badge on load
+        setTimeout(updateBadge, 300);
+    </script>
+</body>
+</html>
