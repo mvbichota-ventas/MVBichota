@@ -23,7 +23,8 @@ async function load(){
   if(pr.error)throw pr.error;if(cr.error)throw cr.error;
   if(!pr.data||pr.data.length===0)throw new Error('Supabase no contiene productos; se usa el catálogo de respaldo');
   const categories=cr.data.map(mapCategory);
-  const products=pr.data.map(mapProduct);
+  const categoryById=new Map(cr.data.map(c=>[c.id,c]));
+  const products=pr.data.map(p=>mapProduct(p,categoryById));
   if(products.some(p=>!p.category)){const localCats=local.categories||[];products.forEach(p=>{if(!p.category){const c=localCats.find(x=>x.id===p.categoryId);if(c)p.category=c.id}})}
   categories.forEach(c=>{c.count=products.filter(p=>p.category===c.id).length});
   return {...local,products,categories,source:'supabase'};
