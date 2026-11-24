@@ -38,8 +38,7 @@ class ComboBuilder {
 
     async loadData() {
         try {
-            const response = await fetch('data/products.json');
-            const data = await response.json();
+            const data = window.MVStoreData ? await window.MVStoreData.load() : await (async()=>{const response=await fetch('data/products.json');return response.json()})();
             
             this.products = data.products;
             this.comboTypes = data.comboTypes;

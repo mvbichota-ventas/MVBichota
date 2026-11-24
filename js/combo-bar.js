@@ -45,10 +45,8 @@ class ComboBuilder {
 
     async loadProducts() {
         try {
-            const response = await fetch('data/products.json');
-            if (!response.ok) throw new Error('fetch failed');
-            const data = await response.json();
-            this.products = data.products.filter(p => p.active && p.allowInCombo !== false);
+            const data = window.MVStoreData ? await window.MVStoreData.load() : await (async()=>{const response=await fetch('data/products.json');if(!response.ok)throw new Error('fetch failed');return response.json()})();
+            this.products = (data.products || []).filter(p => p.active && p.allowInCombo !== false);
         } catch (error) {
             this.products = this.getEmbeddedProducts();
         }

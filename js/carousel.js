@@ -31,10 +31,8 @@ class ProductCarousel {
 
     async loadProducts() {
         try {
-            const response = await fetch('data/products.json');
-            if (!response.ok) throw new Error('fetch failed');
-            const data = await response.json();
-            this.products = data.products;
+            const data = window.MVStoreData ? await window.MVStoreData.load() : await (async()=>{const response=await fetch('data/products.json');if(!response.ok)throw new Error('fetch failed');return response.json()})();
+            this.products = data.products || [];
         } catch (error) {
             this.products = this.getEmbeddedProducts();
         }
