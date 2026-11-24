@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba Supabase - MV Bichota</title>
+</head>
+<body style="font-family: Arial; padding: 25px; background: #f8f8f8;">
+
+    <h1>MV Bichota - Prueba de conexión</h1>
+
+    <p id="estado">Comprobando conexión...</p>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+
+    <script>
+        async function probarConexion() {
+            const estado = document.getElementById("estado");
+
+            try {
+                const cliente = window.supabase.createClient(
+                    window.MV_SUPABASE_URL,
+                    window.MV_SUPABASE_KEY
+                );
+
+                const { data, error } = await cliente
+                    .from("products")
+                    .select("id, name")
+                    .limit(5);
+
+                if (error) {
+                    throw error;
+                }
+
+                estado.innerHTML =
+                    "✅ CONEXIÓN EXITOSA CON SUPABASE<br><br>" +
+                    "Productos encontrados: " + data.length;
+
+                console.log("Productos:", data);
+
+            } catch (error) {
+                estado.innerHTML =
+                    "❌ ERROR DE CONEXIÓN<br><br>" +
+                    error.message;
+
+                console.error(error);
+            }
+        }
+
+        probarConexion();
+    </script>
+
+</body>
+</html>
