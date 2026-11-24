@@ -1,0 +1,928 @@
+/* ================================================
+   COMBO BUILDER - Floating Button + Selector
+   ================================================ */
+
+/* -----------------------------------------------
+   Floating Action Button (FAB)
+   ----------------------------------------------- */
+.combo-fab {
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-lg);
+    background: var(--color-primary);
+    color: var(--color-text-white);
+    border: none;
+    border-radius: var(--radius-full);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(201, 24, 74, 0.4);
+    z-index: var(--z-fixed);
+    transition: all var(--transition-fast);
+}
+
+.combo-fab:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(201, 24, 74, 0.5);
+}
+
+.combo-fab i {
+    width: 20px;
+    height: 20px;
+}
+
+.combo-fab__badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 22px;
+    height: 22px;
+    background: #FF6B35;
+    color: white;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .combo-fab {
+        bottom: 80px;
+        right: 15px;
+        padding: var(--space-sm) var(--space-md);
+        font-size: 0.85rem;
+    }
+    
+    .combo-fab__text {
+        display: none;
+    }
+}
+
+/* -----------------------------------------------
+   Product Selector Modal
+   ----------------------------------------------- */
+.combo-selector {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: var(--z-modal);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.combo-selector.open {
+    display: flex;
+    flex-direction: column;
+    opacity: 1;
+}
+
+.combo-selector__container {
+    background: var(--color-bg);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    animation: comboSelectorSlideIn 0.3s ease;
+}
+
+@keyframes comboSelectorSlideIn {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.combo-selector__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-bg-alt);
+}
+
+.combo-selector__header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--color-text);
+}
+
+.combo-selector__close {
+    background: none;
+    border: none;
+    color: var(--color-text-light);
+    cursor: pointer;
+    padding: var(--space-xs);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.combo-selector__close i {
+    width: 24px;
+    height: 24px;
+}
+
+.combo-selector__categories {
+    display: flex;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    background: var(--color-bg);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.combo-selector__categories::-webkit-scrollbar {
+    display: none;
+}
+
+.combo-selector__cat {
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all var(--transition-fast);
+}
+
+.combo-selector__cat:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.combo-selector__cat.active {
+    background: var(--color-primary);
+    color: var(--color-text-white);
+    border-color: var(--color-primary);
+}
+
+.combo-selector__products {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-md);
+    background: var(--color-bg-alt);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-md);
+    align-content: start;
+}
+
+@media (max-width: 640px) {
+    .combo-selector__products {
+        grid-template-columns: 1fr;
+    }
+}
+
+.combo-selector__product {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--color-bg);
+    border-radius: var(--radius-lg);
+    border: 2px solid transparent;
+    transition: all var(--transition-fast);
+}
+
+.combo-selector__product:hover {
+    border-color: var(--color-border);
+    box-shadow: var(--shadow-sm);
+}
+
+.combo-selector__product.in-combo {
+    border-color: var(--color-primary);
+    background: var(--color-bg-alt);
+}
+
+.combo-selector__product img {
+    width: 70px;
+    height: 70px;
+    border-radius: var(--radius-md);
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.combo-selector__product-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.combo-selector__product-info h4 {
+    margin: 0 0 4px 0;
+    font-size: 0.95rem;
+    color: var(--color-text);
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    line-height: 1.3;
+}
+
+.combo-selector__product-price {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+.combo-selector__product-actions {
+    flex-shrink: 0;
+}
+
+.combo-selector__add-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-primary);
+    color: var(--color-text-white);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.combo-selector__add-btn:hover {
+    background: var(--color-primary-dark);
+}
+
+.combo-selector__add-btn i {
+    width: 16px;
+    height: 16px;
+}
+
+.combo-selector__qty {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.combo-selector__qty-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--color-primary);
+    background: var(--color-bg);
+    color: var(--color-primary);
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.combo-selector__qty-btn:hover {
+    background: var(--color-primary);
+    color: var(--color-text-white);
+}
+
+.combo-selector__qty span {
+    min-width: 30px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.combo-selector__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md) var(--space-lg);
+    border-top: 1px solid var(--color-border);
+    background: var(--color-bg);
+}
+
+.combo-selector__summary {
+    display: flex;
+    flex-direction: column;
+}
+
+.combo-selector__summary span:first-child {
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+}
+
+.combo-selector__summary span:last-child {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.combo-selector__view-btn {
+    padding: var(--space-md) var(--space-xl);
+    background: var(--color-primary);
+    color: var(--color-text-white);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.combo-selector__view-btn:hover {
+    background: var(--color-primary-dark);
+}
+
+/* -----------------------------------------------
+   Combo Bar (Bottom - Mobile)
+   ----------------------------------------------- */
+.combo-bar {
+    display: none;
+    position: fixed;
+    bottom: 70px;
+    left: 10px;
+    right: 10px;
+    background: var(--color-bg);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.2);
+    z-index: var(--z-modal);
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.combo-bar.visible {
+    display: block;
+    transform: translateY(0);
+}
+
+.combo-bar__content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md) var(--space-lg);
+    gap: var(--space-md);
+}
+
+.combo-bar__info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.combo-bar__icon {
+    width: 40px;
+    height: 40px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-white);
+    flex-shrink: 0;
+}
+
+.combo-bar__icon i {
+    width: 20px;
+    height: 20px;
+}
+
+.combo-bar__text {
+    display: flex;
+    flex-direction: column;
+}
+
+.combo-bar__title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0;
+}
+
+.combo-bar__count {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+    margin: 0;
+}
+
+.combo-bar__total {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.combo-bar__actions {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.combo-bar__view-btn {
+    padding: var(--space-sm) var(--space-lg);
+    background: var(--color-primary);
+    color: var(--color-text-white);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+}
+
+.combo-bar__view-btn:hover {
+    background: var(--color-primary-dark);
+}
+
+/* -----------------------------------------------
+   Combo Panel (Desktop / Mobile Full)
+   ----------------------------------------------- */
+.combo-panel {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: var(--z-modal);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.combo-panel.open {
+    display: flex;
+    opacity: 1;
+}
+
+@media (min-width: 769px) {
+    .combo-panel {
+        justify-content: flex-end;
+    }
+    
+    .combo-panel__container {
+        width: 400px;
+        max-width: 100%;
+        height: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .combo-panel {
+        align-items: flex-end;
+    }
+    
+    .combo-panel__container {
+        width: 100%;
+        max-height: 90vh;
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    }
+}
+
+.combo-panel__container {
+    background: var(--color-bg);
+    display: flex;
+    flex-direction: column;
+    animation: comboPanelSlideIn 0.3s ease;
+}
+
+@keyframes comboPanelSlideIn {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.combo-panel__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-bg-alt);
+}
+
+.combo-panel__header-left {
+    display: flex;
+    flex-direction: column;
+}
+
+.combo-panel__title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0;
+}
+
+.combo-panel__count {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+    margin: 4px 0 0 0;
+}
+
+.combo-panel__close {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: var(--color-bg);
+    color: var(--color-text-light);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.combo-panel__close:hover {
+    background: var(--color-border);
+    color: var(--color-text);
+}
+
+.combo-panel__close i {
+    width: 20px;
+    height: 20px;
+}
+
+.combo-panel__items {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-md);
+}
+
+.combo-panel__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3xl) var(--space-lg);
+    text-align: center;
+    color: var(--color-text-muted);
+}
+
+.combo-panel__empty i {
+    width: 48px;
+    height: 48px;
+    margin-bottom: var(--space-md);
+    opacity: 0.5;
+}
+
+.combo-panel__empty p {
+    margin: 0 0 var(--space-xs) 0;
+    font-size: 0.95rem;
+}
+
+.combo-panel__empty-sub {
+    font-size: 0.85rem !important;
+    color: var(--color-text-muted);
+}
+
+/* Panel Item */
+.combo-panel-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-sm);
+    animation: comboItemSlideIn 0.2s ease;
+}
+
+@keyframes comboItemSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.combo-panel-item__image {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.combo-panel-item__info {
+    flex: 1;
+    min-width: 0;
+}
+
+.combo-panel-item__name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 4px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.combo-panel-item__price {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+    margin: 0 0 2px 0;
+}
+
+.combo-panel-item__subtotal {
+    font-size: 0.85rem;
+    color: var(--color-primary);
+    font-weight: 600;
+    margin: 0;
+}
+
+.combo-panel-item__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--space-sm);
+}
+
+.combo-panel-item__qty {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.combo-panel-qty-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--color-primary);
+    background: var(--color-bg);
+    color: var(--color-primary);
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.combo-panel-qty-btn:hover {
+    background: var(--color-primary);
+    color: var(--color-text-white);
+}
+
+.combo-panel-qty-value {
+    min-width: 24px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.combo-panel-item__remove {
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color var(--transition-fast);
+}
+
+.combo-panel-item__remove:hover {
+    color: #EF4444;
+}
+
+.combo-panel-item__remove i {
+    width: 16px;
+    height: 16px;
+}
+
+/* Panel Footer */
+.combo-panel__footer {
+    padding: var(--space-lg);
+    border-top: 1px solid var(--color-border);
+    background: var(--color-bg);
+}
+
+.combo-panel__summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+}
+
+.combo-panel__summary-label {
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+}
+
+.combo-panel__summary-total {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.combo-panel__actions {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.combo-panel__add-btn {
+    flex: 1;
+    padding: var(--space-md);
+    background: var(--color-primary);
+    color: var(--color-text-white);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    transition: all var(--transition-fast);
+}
+
+.combo-panel__add-btn:hover:not(:disabled) {
+    background: var(--color-primary-dark);
+}
+
+.combo-panel__add-btn:disabled {
+    background: var(--color-text-muted);
+    cursor: not-allowed;
+}
+
+.combo-panel__add-btn i {
+    width: 18px;
+    height: 18px;
+}
+
+.combo-panel__clear-btn {
+    padding: var(--space-md);
+    background: transparent;
+    color: var(--color-text-light);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    transition: all var(--transition-fast);
+}
+
+.combo-panel__clear-btn:hover {
+    background: #FEE2E2;
+    color: #EF4444;
+    border-color: #EF4444;
+}
+
+.combo-panel__clear-btn i {
+    width: 16px;
+    height: 16px;
+}
+
+/* -----------------------------------------------
+   Toast Notifications
+   ----------------------------------------------- */
+.combo-toast {
+    position: fixed;
+    bottom: 150px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: var(--space-md) var(--space-lg);
+    border-radius: var(--radius-lg);
+    color: var(--color-text-white);
+    font-weight: 500;
+    z-index: 9999;
+    animation: comboToastIn 0.3s ease, comboToastOut 0.3s ease 2.7s;
+    box-shadow: var(--shadow-lg);
+    max-width: 90%;
+    text-align: center;
+}
+
+.combo-toast.success {
+    background: #10B981;
+}
+
+.combo-toast.warning {
+    background: #F59E0B;
+}
+
+.combo-toast.error {
+    background: #EF4444;
+}
+
+.combo-toast.info {
+    background: var(--color-text-light);
+}
+
+@keyframes comboToastIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+@keyframes comboToastOut {
+    from {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+}
+
+/* -----------------------------------------------
+   Responsive Adjustments
+   ----------------------------------------------- */
+@media (max-width: 768px) {
+    .combo-bar {
+        bottom: 65px;
+        left: 8px;
+        right: 8px;
+    }
+    
+    .combo-bar__content {
+        padding: var(--space-sm) var(--space-md);
+    }
+    
+    .combo-bar__icon {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .combo-bar__icon i {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .combo-bar__title {
+        font-size: 0.85rem;
+    }
+    
+    .combo-bar__count {
+        font-size: 0.75rem;
+    }
+    
+    .combo-bar__total {
+        font-size: 1rem;
+    }
+    
+    .combo-bar__view-btn {
+        padding: var(--space-sm) var(--space-md);
+        font-size: 0.8rem;
+    }
+    
+    .combo-panel-item {
+        padding: var(--space-sm);
+    }
+    
+    .combo-panel-item__image {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+/* -----------------------------------------------
+   Animation for product card button change
+   ----------------------------------------------- */
+@keyframes comboBtnPulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.combo-card-container.in-combo {
+    animation: comboBtnPulse 0.3s ease;
+}

@@ -1,0 +1,455 @@
+/* ================================================
+   PRODUCT CAROUSEL - Featured Products
+   ================================================ */
+
+/* -----------------------------------------------
+   Section Container
+   ----------------------------------------------- */
+.featured-section {
+    padding: var(--space-4xl) 0;
+    background: var(--color-bg);
+    overflow: hidden;
+}
+
+.featured-section__header {
+    text-align: center;
+    margin-bottom: var(--space-3xl);
+}
+
+.featured-section__title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: var(--space-sm);
+}
+
+.featured-section__subtitle {
+    font-size: 1rem;
+    color: var(--color-text-light);
+    margin-bottom: var(--space-xl);
+}
+
+.featured-section__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+}
+
+.featured-section__link:hover {
+    gap: var(--space-sm);
+}
+
+.featured-section__link i {
+    width: 18px;
+    height: 18px;
+}
+
+/* -----------------------------------------------
+   Carousel Container
+   ----------------------------------------------- */
+.carousel {
+    position: relative;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--space-xl);
+}
+
+.carousel__wrapper {
+    overflow: hidden;
+    margin: 0 calc(-1 * var(--space-md));
+}
+
+.carousel__track {
+    display: flex;
+    gap: var(--space-md);
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    padding: var(--space-md) 0;
+}
+
+/* -----------------------------------------------
+   Product Card
+   ----------------------------------------------- */
+.carousel__item {
+    flex: 0 0 calc(25% - var(--space-md));
+    min-width: 280px;
+    padding: 0 var(--space-sm);
+}
+
+@media (max-width: 1200px) {
+    .carousel__item {
+        flex: 0 0 calc(33.333% - var(--space-md));
+    }
+}
+
+@media (max-width: 900px) {
+    .carousel__item {
+        flex: 0 0 calc(50% - var(--space-md));
+    }
+}
+
+@media (max-width: 600px) {
+    .carousel__item {
+        flex: 0 0 calc(100% - var(--space-md));
+        min-width: 260px;
+    }
+}
+
+.carousel-card {
+    position: relative;
+    background: var(--color-bg);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    transition: all var(--transition-fast);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.carousel-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* -----------------------------------------------
+   Card Image
+   ----------------------------------------------- */
+.carousel-card__image {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    background: var(--color-bg-alt);
+    overflow: hidden;
+}
+
+.carousel-card__image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: var(--space-md);
+    transition: transform 0.4s ease;
+}
+
+.carousel-card:hover .carousel-card__image img {
+    transform: scale(1.05);
+}
+
+/* -----------------------------------------------
+   Card Badges
+   ----------------------------------------------- */
+.carousel-card__badges {
+    position: absolute;
+    top: var(--space-sm);
+    left: var(--space-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    z-index: 2;
+}
+
+.carousel-card__badge {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: var(--radius-sm);
+}
+
+.carousel-card__badge--sale {
+    background: var(--color-primary);
+    color: var(--color-text-white);
+}
+
+.carousel-card__badge--new {
+    background: var(--color-accent);
+    color: var(--color-text-white);
+}
+
+.carousel-card__badge--out {
+    background: var(--color-text-muted);
+    color: var(--color-text-white);
+}
+
+/* -----------------------------------------------
+   Card Wishlist Button
+   ----------------------------------------------- */
+.carousel-card__wishlist {
+    position: absolute;
+    top: var(--space-sm);
+    right: var(--space-sm);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--color-bg);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all var(--transition-fast);
+    z-index: 2;
+    opacity: 0;
+    transform: translateY(-4px);
+}
+
+.carousel-card:hover .carousel-card__wishlist {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.carousel-card__wishlist i {
+    width: 18px;
+    height: 18px;
+    color: var(--color-text-light);
+    transition: color var(--transition-fast);
+}
+
+.carousel-card__wishlist:hover i {
+    color: var(--color-primary);
+}
+
+/* -----------------------------------------------
+   Card Content
+   ----------------------------------------------- */
+.carousel-card__content {
+    padding: var(--space-md);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.carousel-card__category {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-primary);
+    margin-bottom: var(--space-xs);
+}
+
+.carousel-card__title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: var(--space-sm);
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.carousel-card__price {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+    margin-top: auto;
+}
+
+.carousel-card__price-current {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.carousel-card__price-old {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    text-decoration: line-through;
+}
+
+.carousel-card__discount {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    background: rgba(212, 175, 55, 0.1);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+}
+
+/* -----------------------------------------------
+   Card Add to Cart Button
+   ----------------------------------------------- */
+.carousel-card__cart-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-text);
+    color: var(--color-text-white);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.carousel-card__cart-btn:hover {
+    background: var(--color-primary);
+}
+
+.carousel-card__cart-btn i {
+    width: 16px;
+    height: 16px;
+}
+
+.carousel-card__cart-btn--disabled {
+    background: var(--color-text-muted);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* -----------------------------------------------
+   Navigation Arrows
+   ----------------------------------------------- */
+.carousel__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all var(--transition-fast);
+    z-index: 10;
+}
+
+.carousel__nav:hover {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.carousel__nav:hover i {
+    color: var(--color-text-white);
+}
+
+.carousel__nav i {
+    width: 20px;
+    height: 20px;
+    color: var(--color-text);
+    transition: color var(--transition-fast);
+}
+
+.carousel__nav--prev {
+    left: 0;
+}
+
+.carousel__nav--next {
+    right: 0;
+}
+
+.carousel__nav--disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* -----------------------------------------------
+   Dots Navigation
+   ----------------------------------------------- */
+.carousel__dots {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-xl);
+}
+
+.carousel__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-border);
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    padding: 0;
+}
+
+.carousel__dot:hover {
+    background: var(--color-primary);
+}
+
+.carousel__dot.active {
+    background: var(--color-primary);
+    width: 28px;
+    border-radius: var(--radius-full);
+}
+
+/* -----------------------------------------------
+   Responsive Adjustments
+   ----------------------------------------------- */
+@media (max-width: 768px) {
+    .featured-section {
+        padding: var(--space-2xl) 0;
+    }
+    
+    .carousel {
+        padding: 0 var(--space-md);
+    }
+    
+    .carousel__wrapper {
+        margin: 0 calc(-1 * var(--space-sm));
+    }
+    
+    .carousel__nav {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .carousel__nav i {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .carousel__nav--prev {
+        left: var(--space-xs);
+    }
+    
+    .carousel__nav--next {
+        right: var(--space-xs);
+    }
+}
+
+@media (max-width: 480px) {
+    .carousel__nav {
+        display: none;
+    }
+    
+    .carousel__track {
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    
+    .carousel__track::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .carousel__item {
+        scroll-snap-align: start;
+    }
+}

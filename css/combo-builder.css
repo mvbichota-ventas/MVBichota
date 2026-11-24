@@ -1,0 +1,605 @@
+/* ================================================
+   COMBO BUILDER STYLES
+   ================================================ */
+
+.combo-builder {
+    padding: calc(80px + var(--space-2xl)) 0 var(--space-4xl);
+    min-height: 100vh;
+    background: var(--color-bg-alt);
+}
+
+/* Progress Steps */
+.combo-progress {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-xl);
+    margin-bottom: var(--space-3xl);
+}
+
+.combo-progress__step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    position: relative;
+}
+
+.combo-progress__step::after {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: calc(50% + 25px);
+    width: calc(100% - 10px);
+    height: 2px;
+    background: var(--color-border);
+}
+
+.combo-progress__step:last-child::after {
+    display: none;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    transition: all var(--transition-base);
+}
+
+.step-label {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+}
+
+.combo-progress__step.active .step-number {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-text-white);
+}
+
+.combo-progress__step.active .step-label {
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+.combo-progress__step.active::after {
+    background: var(--color-primary);
+}
+
+.combo-progress__step.completed .step-number {
+    background: #10B981;
+    border-color: #10B981;
+    color: var(--color-text-white);
+}
+
+/* Combo Step */
+.combo-step {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.combo-step.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.combo-step__header {
+    text-align: center;
+    margin-bottom: var(--space-3xl);
+}
+
+.combo-step__title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 700;
+    margin-bottom: var(--space-md);
+}
+
+.combo-step__description {
+    font-size: 1.0625rem;
+    color: var(--color-text-light);
+}
+
+.back-step {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    color: var(--color-text-light);
+    font-size: 0.9375rem;
+    margin-bottom: var(--space-lg);
+    transition: color var(--transition-base);
+}
+
+.back-step:hover {
+    color: var(--color-primary);
+}
+
+.back-step i {
+    width: 18px;
+    height: 18px;
+}
+
+/* Combo Type Grid */
+.combo-type-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-3xl);
+}
+
+.combo-type-card {
+    background: var(--color-bg);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.combo-type-card:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.combo-type-card.selected {
+    border-color: var(--color-primary);
+    background: var(--color-bg-alt);
+}
+
+.combo-type-card__icon {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-md);
+}
+
+.combo-type-card__name {
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+}
+
+.combo-type-card__desc {
+    font-size: 0.8125rem;
+    color: var(--color-text-light);
+}
+
+/* Budget & People Options */
+.combo-budget-section {
+    margin-bottom: var(--space-3xl);
+}
+
+.combo-budget-section .section-title {
+    text-align: left;
+    font-size: 1.25rem;
+    margin-bottom: var(--space-lg);
+}
+
+.budget-options,
+.people-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+}
+
+.budget-option,
+.people-option {
+    padding: var(--space-md) var(--space-xl);
+    background: var(--color-bg);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-full);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.budget-option:hover,
+.people-option:hover {
+    border-color: var(--color-primary);
+}
+
+.budget-option.selected,
+.people-option.selected {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-text-white);
+}
+
+.custom-budget {
+    margin-top: var(--space-lg);
+    max-width: 300px;
+}
+
+.custom-budget label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: var(--space-sm);
+}
+
+.budget-input-group {
+    display: flex;
+    align-items: center;
+    background: var(--color-bg);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.budget-input-group:focus-within {
+    border-color: var(--color-primary);
+}
+
+.currency {
+    padding: var(--space-md);
+    background: var(--color-bg-alt);
+    font-weight: 600;
+    color: var(--color-text-light);
+}
+
+.budget-input-group input {
+    flex: 1;
+    padding: var(--space-md);
+    border: none;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.budget-input-group input:focus {
+    outline: none;
+}
+
+/* Budget Progress */
+.budget-progress {
+    background: var(--color-bg);
+    border-radius: var(--radius-xl);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.budget-progress__info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--space-md);
+    font-size: 0.9375rem;
+}
+
+.budget-progress__bar {
+    height: 8px;
+    background: var(--color-border);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.budget-progress__fill {
+    height: 100%;
+    background: var(--color-primary);
+    border-radius: var(--radius-full);
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+.budget-progress__fill.over-budget {
+    background: #EF4444;
+}
+
+.budget-warning {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+    padding: var(--space-md);
+    background: #FEF3C7;
+    color: #92400E;
+    border-radius: var(--radius-lg);
+    font-size: 0.875rem;
+}
+
+.budget-warning i {
+    width: 18px;
+    height: 18px;
+}
+
+/* Combo Filters */
+.combo-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xl);
+}
+
+.filter-btn {
+    padding: var(--space-sm) var(--space-lg);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all var(--transition-base);
+}
+
+.filter-btn:hover {
+    border-color: var(--color-primary);
+}
+
+.filter-btn.active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-text-white);
+}
+
+/* Combo Products Grid */
+.combo-products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.combo-product-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    background: var(--color-bg);
+    border-radius: var(--radius-xl);
+    padding: var(--space-md);
+    transition: all var(--transition-base);
+}
+
+.combo-product-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.combo-product-card.unavailable {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.combo-product-card.not-allowed {
+    display: none;
+}
+
+.combo-product__image {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--radius-lg);
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.combo-product__info {
+    flex: 1;
+    min-width: 0;
+}
+
+.combo-product__name {
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+}
+
+.combo-product__category {
+    font-size: 0.75rem;
+    color: var(--color-primary);
+    text-transform: uppercase;
+    margin-bottom: var(--space-xs);
+}
+
+.combo-product__price {
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+.combo-product__unit {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+}
+
+.combo-product__quantity {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.qty-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    transition: all var(--transition-base);
+}
+
+.qty-btn:hover {
+    background: var(--color-primary);
+    color: var(--color-text-white);
+    border-color: var(--color-primary);
+}
+
+.qty-value {
+    min-width: 40px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.125rem;
+}
+
+/* Suggestions */
+.combo-suggestions {
+    background: var(--color-bg);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    margin-bottom: var(--space-xl);
+}
+
+.combo-suggestions h3 {
+    font-size: 1rem;
+    margin-bottom: var(--space-lg);
+}
+
+.suggestions-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+}
+
+.suggestion-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.suggestion-item:hover {
+    background: var(--color-primary);
+    color: var(--color-text-white);
+}
+
+/* Combo Summary */
+.combo-summary {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.combo-summary__card {
+    background: var(--color-bg);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    box-shadow: var(--shadow-md);
+}
+
+.combo-summary__header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.combo-type-icon {
+    font-size: 2.5rem;
+}
+
+.combo-summary__header h3 {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    margin-bottom: var(--space-xs);
+}
+
+.combo-summary__header p {
+    font-size: 0.875rem;
+    color: var(--color-text-light);
+}
+
+.combo-summary__details {
+    margin-bottom: var(--space-xl);
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-sm) 0;
+}
+
+.summary-row--discount {
+    color: #10B981;
+}
+
+.summary-row--total {
+    font-size: 1.25rem;
+    font-weight: 700;
+    padding-top: var(--space-md);
+    margin-top: var(--space-md);
+    border-top: 1px solid var(--color-border);
+}
+
+.combo-summary__items {
+    margin-bottom: var(--space-xl);
+}
+
+.combo-summary__items h4 {
+    font-size: 0.9375rem;
+    margin-bottom: var(--space-md);
+}
+
+.combo-summary__items ul {
+    list-style: none;
+}
+
+.combo-summary__items li {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-sm) 0;
+    font-size: 0.9375rem;
+}
+
+.combo-summary__totals {
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+}
+
+/* Combo Step Actions */
+.combo-step__actions {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin-top: var(--space-3xl);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .combo-progress {
+        gap: var(--space-md);
+    }
+    
+    .combo-progress__step::after {
+        display: none;
+    }
+    
+    .step-label {
+        display: none;
+    }
+    
+    .combo-type-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .combo-products-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .budget-progress__info {
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+    
+    .combo-step__actions {
+        flex-direction: column;
+    }
+    
+    .combo-step__actions .btn {
+        width: 100%;
+    }
+}
