@@ -9,8 +9,8 @@ async function fallback(){
 function mapCategory(c){
  return {id:c.slug||c.id,name:c.name,icon:c.icon||'shopping-bag',description:c.description||'',image:c.image_url||'',active:c.active!==false,allowInCombo:c.allow_in_combo!==false,sortOrder:Number(c.sort_order||0)};
 }
-function mapProduct(p){
- const category=p.categories||p.category||{};
+function mapProduct(p,categoryById){
+ const category=p.categories||p.category||categoryById.get(p.category_id)||{};
  const regular=Number(p.price||0), sale=p.sale_price==null?null:Number(p.sale_price);
  return {id:p.legacy_id||p.slug||p.id,dbId:p.id,slug:p.slug||'',name:p.name,description:p.description||'',price:sale!==null?sale:regular,originalPrice:sale!==null&&sale<regular?regular:null,oldPrice:sale!==null&&sale<regular?regular:null,unit:p.unit||'unidad',category:category.slug||'',categoryId:p.category_id||null,image:p.image_url||(Array.isArray(p.images)?p.images[0]:null)||'',images:Array.isArray(p.images)?p.images:[],stock:Number(p.stock||0),active:p.active!==false,featured:p.featured===true,featuredOrder:Number(p.featured_order||0),comboOrder:Number(p.combo_order||p.sort_order||0),allowInCombo:p.allow_in_combo!==false};
 }
