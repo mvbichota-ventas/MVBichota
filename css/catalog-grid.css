@@ -1,11 +1,220 @@
-/* MV Bichota — responsive public catalog cards */
-.products__grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;align-items:stretch}
-.products__grid>.product-card{position:relative;min-width:0;border:1px solid rgba(26,26,26,.07);border-radius:14px;box-shadow:0 3px 14px rgba(0,0,0,.06);transition:transform .2s ease,box-shadow .2s ease}
-.products__grid>.product-card:hover{transform:translateY(-3px);box-shadow:0 9px 24px rgba(0,0,0,.1)}
-.products__grid .product-card__image{aspect-ratio:1/1;padding:0!important;height:auto!important;background:#fff;border-bottom:1px solid rgba(26,26,26,.06)}
-.products__grid .product-card__image img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:12px}
-.products__grid .product-card__content{padding:14px;gap:6px}.products__grid .product-card__category{font-size:.68rem;margin:0}.products__grid .product-card__title{font-size:.95rem;line-height:1.35;min-height:2.55em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:0}.products__grid .product-card__description{display:none}.products__grid .product-card__price{margin:4px 0 8px;gap:8px}.products__grid .price-current{font-size:1.15rem;font-weight:700;color:var(--color-primary)}.products__grid .product-card__cart-btn{min-height:40px;padding:8px 10px}
-.catalog__search{width:min(100%,320px);min-height:42px;padding:10px 13px;border:1px solid var(--color-border);border-radius:9px;background:#fff;color:var(--color-text);font:inherit}.catalog__search:focus{outline:2px solid var(--color-primary);outline-offset:1px}.availability-badge{position:absolute;z-index:3;left:10px;bottom:10px;padding:5px 9px;border-radius:20px;background:#8b0000;color:#fff;font-size:.7rem;font-weight:700}.products__grid .product-card__cart-btn:disabled{background:#777!important;color:#fff!important;opacity:.8;cursor:not-allowed}.catalog__controls{gap:14px}.catalog__filters{min-width:0}.catalog__sort{flex-shrink:0}
-@media(max-width:1100px){.products__grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}}
-@media(max-width:700px){.products__grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.products__grid .product-card__content{padding:10px}.products__grid .product-card__title{font-size:.86rem}.products__grid .price-current{font-size:1rem}.products__grid .product-card__cart-btn{font-size:.72rem;gap:5px;min-height:38px}.products__grid .product-card__wishlist{opacity:1;transform:none;width:30px;height:30px;top:7px;right:7px}.catalog__search{width:100%;max-width:none}.catalog__controls{gap:10px}}
-@media(max-width:360px){.products__grid{gap:8px}.products__grid .product-card__content{padding:8px}.products__grid .product-card__title{font-size:.8rem}.products__grid .product-card__cart-btn{padding:7px 5px}}
+/* MV Bichota — responsive catalog and product cards */
+.catalog > .container { width: min(100% - 32px, 1440px); }
+
+.products__grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(12px, 1.5vw, 22px);
+  align-items: stretch;
+}
+
+.products__grid > .product-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgba(26, 26, 26, .08);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, .055);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .products__grid > .product-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 9px 24px rgba(0, 0, 0, .11);
+  }
+}
+
+.products__grid .product-card__image {
+  position: relative;
+  flex: 0 0 auto;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  height: auto !important;
+  padding: 0 !important;
+  overflow: hidden;
+  background: #fff;
+  border-bottom: 1px solid rgba(26, 26, 26, .06);
+}
+
+.products__grid .product-card__image img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: clamp(8px, 1vw, 14px);
+  object-fit: contain;
+}
+
+.products__grid .product-card__content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 7px;
+  min-width: 0;
+  padding: clamp(10px, 1vw, 15px);
+}
+
+.products__grid .product-card__category {
+  margin: 0;
+  color: #6b625e;
+  font-size: .72rem;
+  line-height: 1.3;
+}
+
+.products__grid .product-card__title {
+  display: -webkit-box;
+  min-height: 2.6em;
+  margin: 0;
+  overflow: hidden;
+  font-size: clamp(.86rem, .9vw, 1rem);
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.products__grid .product-card__description { display: none; }
+
+.products__grid .product-card__price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 5px 9px;
+  margin: auto 0 3px;
+  padding-top: 4px;
+}
+
+.products__grid .price-current {
+  color: var(--color-primary, #8b0000);
+  font-size: clamp(1rem, 1.1vw, 1.2rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.products__grid .price-original {
+  color: #777;
+  font-size: .82rem;
+  text-decoration: line-through;
+}
+
+.products__grid .product-card__badge {
+  z-index: 2;
+  max-width: calc(100% - 16px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.products__grid .product-card__cart-btn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 10px;
+  font-size: .88rem;
+  line-height: 1.2;
+  touch-action: manipulation;
+}
+
+.products__grid .product-card__wishlist {
+  z-index: 3;
+  width: 36px;
+  height: 36px;
+  opacity: 1;
+  transform: none;
+}
+
+.products__grid .product-card__cart-btn:disabled {
+  background: #777 !important;
+  color: #fff !important;
+  opacity: .9;
+  cursor: not-allowed;
+}
+
+.products__grid .availability-badge {
+  position: absolute;
+  z-index: 2;
+  right: 8px;
+  bottom: 8px;
+  left: 8px;
+  width: fit-content;
+  max-width: calc(100% - 16px);
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #8b0000;
+  color: #fff;
+  font-size: .72rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.catalog__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.catalog__filters { min-width: 0; }
+.catalog__sort { flex: 0 0 auto; }
+
+.catalog__search {
+  width: min(100%, 320px);
+  min-height: 44px;
+  padding: 10px 13px;
+  border: 1px solid var(--color-border, #ded8d4);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--color-text, #1a1a1a);
+  font: inherit;
+}
+
+.catalog__search:focus-visible {
+  outline: 2px solid var(--color-primary, #8b0000);
+  outline-offset: 2px;
+}
+
+@media (min-width: 1600px) {
+  .catalog > .container { width: min(100% - 48px, 1680px); }
+  .products__grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 24px; }
+}
+
+@media (max-width: 1100px) {
+  .products__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+}
+
+@media (max-width: 700px) {
+  .catalog > .container { width: min(100% - 24px, 560px); }
+  .products__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .products__grid .product-card__content { gap: 6px; padding: 10px; }
+  .products__grid .product-card__title { font-size: .86rem; }
+  .products__grid .product-card__cart-btn { min-height: 42px; padding: 8px 6px; font-size: .78rem; }
+  .catalog__controls { align-items: stretch; gap: 10px; }
+  .catalog__filters { order: 2; width: 100%; overflow-x: auto; }
+  .catalog__sort { order: 1; width: 100%; }
+  .catalog__sort-select { width: 100%; min-height: 44px; }
+  .catalog__search { order: 0; width: 100%; max-width: none; }
+}
+
+@media (max-width: 360px) {
+  .catalog > .container { width: calc(100% - 20px); }
+  .products__grid { gap: 8px; }
+  .products__grid .product-card { border-radius: 10px; }
+  .products__grid .product-card__content { padding: 8px; }
+  .products__grid .product-card__category { font-size: .65rem; }
+  .products__grid .product-card__title { min-height: 2.6em; font-size: .8rem; }
+  .products__grid .product-card__cart-btn { gap: 4px; min-height: 40px; padding: 7px 4px; font-size: .72rem; }
+  .products__grid .price-current { font-size: .95rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .products__grid > .product-card { transition: none; }
+}
