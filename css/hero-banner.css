@@ -1,0 +1,108 @@
+/* MV Bichota — nuevo hero gráfico responsive */
+.hero {
+    position: relative;
+    inset: auto;
+    z-index: 0;
+    display: block;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    margin-top: var(--header-height);
+    padding: 0;
+    overflow: hidden;
+    background: #650000;
+}
+
+.hero::before,
+.hero::after {
+    content: none;
+    display: none;
+}
+
+.hero .container {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+}
+
+.hero__visual {
+    position: relative;
+    width: 100%;
+    max-width: 1672px;
+    margin: 0 auto;
+    overflow: hidden;
+    background: #650000;
+}
+
+.hero__visual img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1672 / 941;
+    object-fit: contain;
+    object-position: center;
+}
+
+.hero__buy-hotspot {
+    position: absolute;
+    left: 26.5%;
+    top: 64.5%;
+    width: 36%;
+    height: 13.5%;
+    display: block;
+    border-radius: 999px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.hero__buy-hotspot:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: 3px;
+    box-shadow: 0 0 0 6px #8b0000;
+}
+
+.hero__secondary-action {
+    display: flex;
+    justify-content: center;
+    padding: 0.75rem 1rem 1.25rem;
+    background: #fff;
+}
+
+.hero__secondary-action .btn {
+    min-height: 44px;
+}
+
+.hero-spacer {
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    .hero {
+        margin-top: var(--header-height);
+    }
+
+    .hero__visual img {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1672 / 941;
+        object-fit: contain;
+    }
+
+    .hero__buy-hotspot {
+        left: 26.5%;
+        top: 64.5%;
+        width: 36%;
+        height: 13.5%;
+    }
+
+    .hero__secondary-action {
+        padding: 0.5rem 1rem 1rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero__buy-hotspot {
+        scroll-behavior: auto;
+    }
+}
