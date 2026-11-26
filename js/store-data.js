@@ -1,11 +1,22 @@
-/* Public catalog source: Supabase first, local JSON fallback. Public key only; RLS controls visibility. */
+/* Public product catalog data: Supabase first, local JSON fallback. Public key only; RLS controls visibility. */
 (function () {
   'use strict';
+
+  let catalogPromise;
 
   async function fallback() {
     const response = await fetch('data/products.json');
     if (!response.ok) throw new Error('No se pudo leer el catálogo local');
     return response.json();
+  }
+
+  function ensureCatalogStylesheet() {
+    if (document.querySelector('link[data-mv-catalog-styles]')) return;
+    const stylesheet = document.createElement('link');
+    stylesheet.rel = 'stylesheet';
+    stylesheet.href = 'css/catalog-grid.css';
+    stylesheet.dataset.mvCatalogStyles = 'true';
+    document.head.appendChild(stylesheet);
   }
 
   function mapCategory(category) {
@@ -55,131 +66,8 @@
     };
   }
 
-  function installCatalogEnhancements() {
-    const style = document.createElement('style');
-    style.textContent = `
-      .catalog > .container { max-width: 1280px; }
-      .products__grid {
-        display: grid !important;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 20px;
-        align-items: stretch;
-      }
-      .products__grid > .product-card {
-        position: relative;
-        min-width: 0;
-        border: 1px solid rgba(26, 26, 26, .07);
-        border-radius: 14px;
-        box-shadow: 0 3px 14px rgba(0, 0, 0, .06);
-        transition: transform .2s ease, box-shadow .2s ease;
-      }
-      .products__grid > .product-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 9px 24px rgba(0, 0, 0, .1);
-      }
-      .products__grid .product-card__image {
-        aspect-ratio: 1 / 1;
-        padding: 0 !important;
-        height: auto !important;
-        background: #fff;
-        border-bottom: 1px solid rgba(26, 26, 26, .06);
-      }
-      .products__grid .product-card__image img {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        padding: 12px;
-      }
-      .products__grid .product-card__content { padding: 14px; gap: 6px; }
-      .products__grid .product-card__category { font-size: .68rem; margin: 0; }
-      .products__grid .product-card__title {
-        font-size: .95rem;
-        line-height: 1.35;
-        min-height: 2.55em;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        margin: 0;
-      }
-      .products__grid .product-card__description { display: none; }
-      .products__grid .product-card__price { margin: 4px 0 8px; gap: 8px; }
-      .products__grid .price-current {
-        font-size: 1.15rem;
-        font-weight: 700;
-        color: var(--color-primary);
-      }
-      .products__grid .product-card__cart-btn { min-height: 40px; padding: 8px 10px; }
-      .catalog__search {
-        width: min(100%, 320px);
-        min-height: 42px;
-        padding: 10px 13px;
-        border: 1px solid var(--color-border);
-        border-radius: 9px;
-        background: #fff;
-        color: var(--color-text);
-        font: inherit;
-      }
-      .catalog__search:focus {
-        outline: 2px solid var(--color-primary);
-        outline-offset: 1px;
-      }
-      .availability-badge {
-        position: absolute;
-        z-index: 3;
-        left: 10px;
-        bottom: 10px;
-        padding: 5px 9px;
-        border-radius: 20px;
-        background: #8b0000;
-        color: #fff;
-        font-size: .7rem;
-        font-weight: 700;
-      }
-      .products__grid .product-card__cart-btn:disabled {
-        background: #777 !important;
-        color: #fff !important;
-        opacity: .8;
-        cursor: not-allowed;
-      }
-      .catalog__controls { gap: 14px; }
-      .catalog__filters { min-width: 0; }
-      .catalog__sort { flex-shrink: 0; }
-      @media (max-width: 1100px) {
-        .products__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-      }
-      @media (max-width: 700px) {
-        .products__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-        .products__grid .product-card__content { padding: 10px; }
-        .products__grid .product-card__title { font-size: .86rem; }
-        .products__grid .price-current { font-size: 1rem; }
-        .products__grid .product-card__cart-btn {
-          font-size: .72rem;
-          gap: 5px;
-          min-height: 38px;
-        }
-        .products__grid .product-card__wishlist {
-          opacity: 1;
-          transform: none;
-          width: 30px;
-          height: 30px;
-          top: 7px;
-          right: 7px;
-        }
-        .catalog__search { width: 100%; max-width: none; }
-        .catalog__controls { gap: 10px; }
-      }
-      @media (max-width: 360px) {
-        .products__grid { gap: 8px; }
-        .products__grid .product-card__content { padding: 8px; }
-        .products__grid .product-card__title { font-size: .8rem; }
-        .products__grid .product-card__cart-btn { padding: 7px 5px; }
-      }
-    `;
-    document.head.appendChild(style);
-
+  function installCatalogBehavior() {
+    ensureCatalogStylesheet();
     const grid = document.getElementById('productsGrid');
     const controls = document.querySelector('.catalog__controls');
     if (!grid || !controls) return;
@@ -251,7 +139,7 @@
     }, true);
   }
 
-  async function load() {
+  async function loadCatalog() {
     let localCatalog;
     try {
       localCatalog = await fallback();
@@ -259,7 +147,6 @@
       localCatalog = { products: [], categories: [] };
     }
 
-    let catalog;
     try {
       if (!window.supabase || !window.MV_SUPABASE_URL || !window.MV_SUPABASE_KEY) {
         throw new Error('Supabase no configurado');
@@ -270,7 +157,6 @@
         window.MV_SUPABASE_KEY,
         { auth: { persistSession: false, autoRefreshToken: false } }
       );
-
       const [productResult, categoryResult] = await Promise.all([
         client.from('products')
           .select('*, categories(slug,name)')
@@ -299,35 +185,34 @@
           if (localCategory) product.category = localCategory.id;
         }
       });
-
       categories.forEach(category => {
         category.count = products.filter(product => product.category === category.id).length;
       });
 
-      catalog = { ...localCatalog, products, categories, source: 'supabase' };
+      return { ...localCatalog, products, categories, source: 'supabase' };
     } catch (error) {
       console.warn('[MV Bichota] Catálogo de respaldo:', error.message);
       const products = (localCatalog.products || [])
         .filter(product => product.active !== false)
-        .map(product => ({
-          ...product,
-          available: Number(product.stock || 0) > 0
-        }));
+        .map(product => ({ ...product, available: Number(product.stock || 0) > 0 }));
 
-      catalog = {
+      return {
         ...localCatalog,
         products,
         categories: (localCatalog.categories || []).filter(category => category.active !== false),
         source: 'json'
       };
     }
+  }
 
-    // Keep one shared product list for card availability and cart safeguards,
-    // regardless of whether Supabase or the local JSON fallback supplied it.
-    window.MV_PUBLIC_PRODUCTS = catalog.products || [];
-    return catalog;
+  function load() {
+    if (!catalogPromise) catalogPromise = loadCatalog();
+    return catalogPromise.then(catalog => {
+      window.MV_PUBLIC_PRODUCTS = catalog.products || [];
+      return catalog;
+    });
   }
 
   window.MVStoreData = { load };
-  document.addEventListener('DOMContentLoaded', installCatalogEnhancements);
+  document.addEventListener('DOMContentLoaded', installCatalogBehavior);
 })();
