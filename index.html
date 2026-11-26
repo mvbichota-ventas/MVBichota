@@ -14,7 +14,7 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="MV Bichota | Tienda online de alimentos, combos y más">
     <meta property="og:description" content="Compra alimentos, productos de aseo, confituras, bebidas y más. Crea combos personalizados y recibe envío gratis en compras mayores a $50.">
-    <meta property="og:image" content="https://mvbichota-ventas.github.io/MVBichota/assets/images/hero.png">
+    <meta property="og:image" content="https://mvbichota-ventas.github.io/MVBichota/assets/images/hero-mv-bichota.webp">
     <meta property="og:image:alt" content="MV Bichota, tienda online y combos personalizados">
     <meta property="og:url" content="https://mvbichota-ventas.github.io/MVBichota/">
     <meta property="og:locale" content="es_ES">
@@ -24,7 +24,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="MV Bichota | Tienda online de alimentos, combos y más">
     <meta name="twitter:description" content="Compra alimentos, aseo, confituras y bebidas. Crea tu combo personalizado y disfruta envío gratis en compras mayores a $50.">
-    <meta name="twitter:image" content="https://mvbichota-ventas.github.io/MVBichota/assets/images/hero.png">
+    <meta name="twitter:image" content="https://mvbichota-ventas.github.io/MVBichota/assets/images/hero-mv-bichota.webp">
     <meta name="twitter:image:alt" content="MV Bichota, tienda online y combos personalizados">
 
     <!-- Datos estructurados: tienda -->
@@ -34,7 +34,7 @@
       "@type": "GroceryStore",
       "name": "MV Bichota",
       "url": "https://mvbichota-ventas.github.io/MVBichota/",
-      "image": "https://mvbichota-ventas.github.io/MVBichota/assets/images/hero.png",
+      "image": "https://mvbichota-ventas.github.io/MVBichota/assets/images/hero-mv-bichota.webp",
       "description": "Tienda online de alimentos, productos de aseo personal, confituras, bebidas y combos personalizados.",
       "telephone": "+535458602",
       "inLanguage": "es"
@@ -50,7 +50,9 @@
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
     <!-- CSS -->
+    <link rel="preload" as="image" href="assets/images/hero-mv-bichota.webp" type="image/webp" fetchpriority="high">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/hero-banner.css">
     <link rel="stylesheet" href="css/combo-bar.css">
     <link rel="stylesheet" href="css/carousel.css">
 </head>
@@ -93,14 +95,23 @@
     </nav>
 
     <main>
-        <section class="hero" id="inicio"><div class="container"><div class="hero__container"><div class="hero__content">
-            <span class="hero__label"><i data-lucide="sparkles"></i>BIENVENIDO A MV BICHOTA</span>
-            <h1 class="hero__title">Todo lo que <span class="highlight">necesitas</span>, en un solo lugar</h1>
-            <p class="hero__description">Alimentos frescos, productos de aseo personal, confituras, bebidas y mucho más. Calidad y conveniencia al alcance de tu mano.</p>
-            <div class="hero__buttons"><a href="#catalogo" class="btn btn-primary btn-lg"><i data-lucide="shopping-bag"></i>Comprar ahora</a><button class="btn btn-outline btn-lg" id="heroComboBtn"><i data-lucide="gift"></i>Arma tu combo</button></div>
-            <div class="hero__benefits"><span class="hero__benefit"><i data-lucide="check"></i> Productos seleccionados</span><span class="hero__benefit"><i data-lucide="truck"></i> Envío gratis +$50</span><span class="hero__benefit"><i data-lucide="headphones"></i> Atención personalizada</span></div>
-        </div></div></div></section>
-        <div class="hero-spacer" aria-hidden="true"></div>
+        <section class="hero" id="inicio" aria-label="Bienvenido a MV Bichota">
+            <div class="hero__visual">
+                <img
+                    src="assets/images/hero-mv-bichota.webp"
+                    alt="MV Bichota: todo lo que necesitas en un solo lugar. Alimentos, aseo personal y mucho más."
+                    width="1672"
+                    height="941"
+                    fetchpriority="high"
+                    decoding="async">
+                <a class="hero__buy-hotspot" href="#catalogo" aria-label="Compra ahora: ver catálogo de MV Bichota"></a>
+            </div>
+            <div class="hero__secondary-action">
+                <button class="btn btn-primary btn-lg" id="heroComboBtn" type="button">
+                    <i data-lucide="gift" aria-hidden="true"></i> Arma tu combo
+                </button>
+            </div>
+        </section>
 
         <section class="featured-section" id="destacados"><div class="container"><div class="featured-section__header"><h2 class="featured-section__title">Productos destacados</h2><p class="featured-section__subtitle">Descubre nuestros productos favoritos</p><a href="#catalogo" class="featured-section__link">Ver todos los productos <i data-lucide="arrow-right"></i></a></div><div class="carousel"><div class="carousel__wrapper"><div class="carousel__track" id="carouselTrack"></div></div><button class="carousel__nav carousel__nav--prev" id="carouselPrev" aria-label="Producto anterior"><i data-lucide="chevron-left"></i></button><button class="carousel__nav carousel__nav--next" id="carouselNext" aria-label="Siguiente producto"><i data-lucide="chevron-right"></i></button></div><div class="carousel__dots" id="carouselDots"></div></div></section>
 
