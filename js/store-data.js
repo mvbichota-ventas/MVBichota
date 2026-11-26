@@ -1,10 +1,333 @@
-/* Public catalog source: Supabase first, JSON fallback. Public key only; RLS controls visibility. */
-(function(){
-'use strict';
-async function fallback(){const r=await fetch('data/products.json');if(!r.ok)throw new Error('No se pudo leer el catálogo local');return r.json()}
-function mapCategory(c){return {id:c.slug||c.id,name:c.name,icon:c.icon||'shopping-bag',description:c.description||'',image:c.image_url||'',active:c.active!==false,allowInCombo:c.allow_in_combo!==false,sortOrder:Number(c.sort_order||0)}}
-function mapProduct(p,categoryById){const category=p.categories||p.category||categoryById.get(p.category_id)||{},regular=Number(p.price||0),sale=p.sale_price==null?null:Number(p.sale_price),images=Array.isArray(p.images)?p.images.filter(x=>typeof x==='string'):[];return {id:p.legacy_id||p.slug||p.id,dbId:p.id,slug:p.slug||'',name:p.name,description:p.description||'',price:sale!==null?sale:regular,originalPrice:sale!==null&&sale<regular?regular:null,oldPrice:sale!==null&&sale<regular?regular:null,unit:p.unit||'unidad',category:category.slug||'',categoryId:p.category_id||null,image:p.image_url||images[0]||'',images,stock:Number(p.stock||0),available:p.is_available!==false&&Number(p.stock||0)>0,active:p.active!==false,featured:p.featured===true,featuredOrder:Number(p.featured_order||0),comboOrder:Number(p.combo_order||p.sort_order||0),allowInCombo:p.allow_in_combo!==false}}
-async function load(){let local;try{local=await fallback()}catch(e){local={products:[],categories:[]}}try{if(!window.supabase||!window.MV_SUPABASE_URL||!window.MV_SUPABASE_KEY)throw new Error('Supabase no configurado');const client=window.supabase.createClient(window.MV_SUPABASE_URL,window.MV_SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:false}}),[pr,cr]=await Promise.all([client.from('products').select('*, categories(slug,name)').eq('active',true).order('sort_order'),client.from('categories').select('*').eq('active',true).order('sort_order')]);if(pr.error)throw pr.error;if(cr.error)throw cr.error;if(!pr.data||pr.data.length===0)throw new Error('Supabase no contiene productos; se usa el catálogo de respaldo');const categories=cr.data.map(mapCategory),categoryById=new Map(cr.data.map(c=>[c.id,c])),products=pr.data.map(p=>mapProduct(p,categoryById));if(products.some(p=>!p.category)){(local.categories||[]).forEach(c=>products.forEach(p=>{if(!p.category&&p.categoryId===c.id)p.category=c.id}))}categories.forEach(c=>c.count=products.filter(p=>p.category===c.id).length);return {...local,products,categories,source:'supabase'}}catch(error){console.warn('[MV Bichota] Catálogo de respaldo:',error.message);const products=(local.products||[]).filter(p=>p.active!==false).map(p=>({...p,available:Number(p.stock||0)>0}));return {...local,products,categories:(local.categories||[]).filter(c=>c.active!==false),source:'json'}}}
-function decorate(){const products=window.MV_PUBLIC_PRODUCTS||[];document.querySelectorAll('.product-card').forEach(card=>{const id=card.dataset.id||card.querySelector('[data-product-id]')?.dataset.productId,p=products.find(x=>String(x.id)===String(id));if(!p)return;const button=card.querySelector('.product-card__cart-btn');if(!p.available){if(button){button.disabled=true;button.setAttribute('aria-disabled','true');button.textContent='No disponible';button.classList.add('is-unavailable')}if(!card.querySelector('.availability-badge')){const badge=document.createElement('span');badge.className='availability-badge';badge.textContent='No disponible';card.querySelector('.product-card__image')?.append(badge)}}});}
-document.addEventListener('click',e=>{const btn=e.target.closest('.product-card__cart-btn');if(btn&&btn.disabled){e.preventDefault();e.stopImmediatePropagation()}},true);new MutationObserver(decorate).observe(document.documentElement,{childList:true,subtree:true});window.MVStoreData={load};const original=load;window.MVStoreData.load=async()=>{const data=await original();window.MV_PUBLIC_PRODUCTS=data.products||[];return data};
+/* Public catalog source: Supabase first, local JSON fallback. Public key only; RLS controls visibility. */
+(function () {
+  'use strict';
+
+  async function fallback() {
+    const response = await fetch('data/products.json');
+    if (!response.ok) throw new Error('No se pudo leer el catálogo local');
+    return response.json();
+  }
+
+  function mapCategory(category) {
+    return {
+      id: category.slug || category.id,
+      name: category.name,
+      icon: category.icon || 'shopping-bag',
+      description: category.description || '',
+      image: category.image_url || '',
+      active: category.active !== false,
+      allowInCombo: category.allow_in_combo !== false,
+      sortOrder: Number(category.sort_order || 0)
+    };
+  }
+
+  function mapProduct(product, categoryById) {
+    const category = product.categories || product.category || categoryById.get(product.category_id) || {};
+    const regularPrice = Number(product.price || 0);
+    const salePrice = product.sale_price == null ? null : Number(product.sale_price);
+    const images = Array.isArray(product.images)
+      ? product.images.filter(image => typeof image === 'string')
+      : [];
+    const stock = Number(product.stock || 0);
+    const available = product.is_available !== false && stock > 0;
+
+    return {
+      id: product.legacy_id || product.slug || product.id,
+      dbId: product.id,
+      slug: product.slug || '',
+      name: product.name,
+      description: product.description || '',
+      price: salePrice !== null ? salePrice : regularPrice,
+      originalPrice: salePrice !== null && salePrice < regularPrice ? regularPrice : null,
+      oldPrice: salePrice !== null && salePrice < regularPrice ? regularPrice : null,
+      unit: product.unit || 'unidad',
+      category: category.slug || '',
+      categoryId: product.category_id || null,
+      image: product.image_url || images[0] || '',
+      images,
+      stock,
+      available,
+      active: product.active !== false,
+      featured: product.featured === true,
+      featuredOrder: Number(product.featured_order || 0),
+      comboOrder: Number(product.combo_order || product.sort_order || 0),
+      allowInCombo: product.allow_in_combo !== false && available
+    };
+  }
+
+  function installCatalogEnhancements() {
+    const style = document.createElement('style');
+    style.textContent = `
+      .catalog > .container { max-width: 1280px; }
+      .products__grid {
+        display: grid !important;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 20px;
+        align-items: stretch;
+      }
+      .products__grid > .product-card {
+        position: relative;
+        min-width: 0;
+        border: 1px solid rgba(26, 26, 26, .07);
+        border-radius: 14px;
+        box-shadow: 0 3px 14px rgba(0, 0, 0, .06);
+        transition: transform .2s ease, box-shadow .2s ease;
+      }
+      .products__grid > .product-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 9px 24px rgba(0, 0, 0, .1);
+      }
+      .products__grid .product-card__image {
+        aspect-ratio: 1 / 1;
+        padding: 0 !important;
+        height: auto !important;
+        background: #fff;
+        border-bottom: 1px solid rgba(26, 26, 26, .06);
+      }
+      .products__grid .product-card__image img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 12px;
+      }
+      .products__grid .product-card__content { padding: 14px; gap: 6px; }
+      .products__grid .product-card__category { font-size: .68rem; margin: 0; }
+      .products__grid .product-card__title {
+        font-size: .95rem;
+        line-height: 1.35;
+        min-height: 2.55em;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin: 0;
+      }
+      .products__grid .product-card__description { display: none; }
+      .products__grid .product-card__price { margin: 4px 0 8px; gap: 8px; }
+      .products__grid .price-current {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--color-primary);
+      }
+      .products__grid .product-card__cart-btn { min-height: 40px; padding: 8px 10px; }
+      .catalog__search {
+        width: min(100%, 320px);
+        min-height: 42px;
+        padding: 10px 13px;
+        border: 1px solid var(--color-border);
+        border-radius: 9px;
+        background: #fff;
+        color: var(--color-text);
+        font: inherit;
+      }
+      .catalog__search:focus {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 1px;
+      }
+      .availability-badge {
+        position: absolute;
+        z-index: 3;
+        left: 10px;
+        bottom: 10px;
+        padding: 5px 9px;
+        border-radius: 20px;
+        background: #8b0000;
+        color: #fff;
+        font-size: .7rem;
+        font-weight: 700;
+      }
+      .products__grid .product-card__cart-btn:disabled {
+        background: #777 !important;
+        color: #fff !important;
+        opacity: .8;
+        cursor: not-allowed;
+      }
+      .catalog__controls { gap: 14px; }
+      .catalog__filters { min-width: 0; }
+      .catalog__sort { flex-shrink: 0; }
+      @media (max-width: 1100px) {
+        .products__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+      }
+      @media (max-width: 700px) {
+        .products__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+        .products__grid .product-card__content { padding: 10px; }
+        .products__grid .product-card__title { font-size: .86rem; }
+        .products__grid .price-current { font-size: 1rem; }
+        .products__grid .product-card__cart-btn {
+          font-size: .72rem;
+          gap: 5px;
+          min-height: 38px;
+        }
+        .products__grid .product-card__wishlist {
+          opacity: 1;
+          transform: none;
+          width: 30px;
+          height: 30px;
+          top: 7px;
+          right: 7px;
+        }
+        .catalog__search { width: 100%; max-width: none; }
+        .catalog__controls { gap: 10px; }
+      }
+      @media (max-width: 360px) {
+        .products__grid { gap: 8px; }
+        .products__grid .product-card__content { padding: 8px; }
+        .products__grid .product-card__title { font-size: .8rem; }
+        .products__grid .product-card__cart-btn { padding: 7px 5px; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    const grid = document.getElementById('productsGrid');
+    const controls = document.querySelector('.catalog__controls');
+    if (!grid || !controls) return;
+
+    function applyCatalogFilters() {
+      const searchInput = document.getElementById('catalogSearch');
+      const query = (searchInput ? searchInput.value : '').trim().toLocaleLowerCase('es');
+      let visible = 0;
+
+      grid.querySelectorAll('.product-card').forEach(card => {
+        const matches = !query || card.textContent.toLocaleLowerCase('es').includes(query);
+        card.hidden = !matches;
+        if (matches) visible += 1;
+      });
+
+      const count = document.getElementById('catalogCount');
+      if (count && query) {
+        count.textContent = visible + ' producto' + (visible === 1 ? '' : 's') +
+          ' encontrado' + (visible === 1 ? '' : 's');
+      }
+
+      const empty = document.getElementById('catalogEmpty');
+      if (empty && query) empty.style.display = visible ? 'none' : 'flex';
+    }
+
+    if (!document.getElementById('catalogSearch')) {
+      const search = document.createElement('input');
+      search.id = 'catalogSearch';
+      search.className = 'catalog__search';
+      search.type = 'search';
+      search.placeholder = 'Buscar productos…';
+      search.setAttribute('aria-label', 'Buscar productos en el catálogo');
+      controls.prepend(search);
+      search.addEventListener('input', applyCatalogFilters);
+    }
+
+    function decorateCards() {
+      const products = window.MV_PUBLIC_PRODUCTS || [];
+      grid.querySelectorAll('.product-card').forEach(card => {
+        const id = card.dataset.id ||
+          card.querySelector('[data-product-id]')?.dataset.productId;
+        const product = products.find(item => String(item.id) === String(id));
+        if (!product || product.available) return;
+
+        const button = card.querySelector('.product-card__cart-btn');
+        if (button) {
+          button.disabled = true;
+          button.setAttribute('aria-disabled', 'true');
+          button.textContent = 'No disponible';
+          button.classList.add('is-unavailable');
+        }
+
+        if (!card.querySelector('.availability-badge')) {
+          const badge = document.createElement('span');
+          badge.className = 'availability-badge';
+          badge.textContent = product.stock <= 0 ? 'Agotado' : 'No disponible';
+          card.querySelector('.product-card__image')?.appendChild(badge);
+        }
+      });
+      applyCatalogFilters();
+    }
+
+    new MutationObserver(decorateCards).observe(grid, { childList: true, subtree: true });
+    grid.addEventListener('click', event => {
+      if (event.target.closest('.product-card__cart-btn:disabled')) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    }, true);
+  }
+
+  async function load() {
+    let localCatalog;
+    try {
+      localCatalog = await fallback();
+    } catch (error) {
+      localCatalog = { products: [], categories: [] };
+    }
+
+    let catalog;
+    try {
+      if (!window.supabase || !window.MV_SUPABASE_URL || !window.MV_SUPABASE_KEY) {
+        throw new Error('Supabase no configurado');
+      }
+
+      const client = window.supabase.createClient(
+        window.MV_SUPABASE_URL,
+        window.MV_SUPABASE_KEY,
+        { auth: { persistSession: false, autoRefreshToken: false } }
+      );
+
+      const [productResult, categoryResult] = await Promise.all([
+        client.from('products')
+          .select('*, categories(slug,name)')
+          .eq('active', true)
+          .order('sort_order'),
+        client.from('categories')
+          .select('*')
+          .eq('active', true)
+          .order('sort_order')
+      ]);
+
+      if (productResult.error) throw productResult.error;
+      if (categoryResult.error) throw categoryResult.error;
+      if (!productResult.data || productResult.data.length === 0) {
+        throw new Error('Supabase no contiene productos; se usa el catálogo de respaldo');
+      }
+
+      const categories = categoryResult.data.map(mapCategory);
+      const categoryById = new Map(categoryResult.data.map(category => [category.id, category]));
+      const products = productResult.data.map(product => mapProduct(product, categoryById));
+
+      products.forEach(product => {
+        if (!product.category) {
+          const localCategory = (localCatalog.categories || [])
+            .find(category => category.id === product.categoryId);
+          if (localCategory) product.category = localCategory.id;
+        }
+      });
+
+      categories.forEach(category => {
+        category.count = products.filter(product => product.category === category.id).length;
+      });
+
+      catalog = { ...localCatalog, products, categories, source: 'supabase' };
+    } catch (error) {
+      console.warn('[MV Bichota] Catálogo de respaldo:', error.message);
+      const products = (localCatalog.products || [])
+        .filter(product => product.active !== false)
+        .map(product => ({
+          ...product,
+          available: Number(product.stock || 0) > 0
+        }));
+
+      catalog = {
+        ...localCatalog,
+        products,
+        categories: (localCatalog.categories || []).filter(category => category.active !== false),
+        source: 'json'
+      };
+    }
+
+    // Keep one shared product list for card availability and cart safeguards,
+    // regardless of whether Supabase or the local JSON fallback supplied it.
+    window.MV_PUBLIC_PRODUCTS = catalog.products || [];
+    return catalog;
+  }
+
+  window.MVStoreData = { load };
+  document.addEventListener('DOMContentLoaded', installCatalogEnhancements);
 })();
