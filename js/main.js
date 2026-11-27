@@ -221,8 +221,9 @@
                     <h3 class="product-card__title">${product.name}</h3>
                     <p class="product-card__description">${product.description || ''}</p>
                     <div class="product-card__price">
-                        ${hasDiscount ? `<span class="price-original">$${product.originalPrice.toFixed(2)}</span>` : ''}
-                        <span class="price-current">$${product.price.toFixed(2)}</span>
+                        ${hasDiscount ? `<span class="price-original">USD ${product.originalPrice.toFixed(2)}</span>` : ''}
+                        <span class="price-current">USD ${Number(product.price || 0).toFixed(2)}</span>
+                        ${product.priceCup != null ? `<span class="price-cup">CUP ${Number(product.priceCup).toFixed(2)}</span>` : ''}
                     </div>
                     <button class="product-card__cart-btn" data-product-id="${product.id}" aria-label="Agregar ${product.name} al carrito">
                         <i data-lucide="shopping-cart"></i>
@@ -263,6 +264,7 @@
                 id: product.id,
                 name: product.name,
                 price: product.price,
+                priceCup: product.priceCup,
                 image: product.image,
                 category: getCategoryName(product.category),
                 unit: product.unit || 'unidad'
@@ -297,6 +299,8 @@
     function setupSortListener() {
         const sortSelect = document.getElementById('sortSelect');
         if (!sortSelect) return;
+        if (sortSelect.dataset.mvSortBound === 'true') return;
+        sortSelect.dataset.mvSortBound = 'true';
         sortSelect.addEventListener('change', function() {
             currentSort = this.value;
             renderProducts();
@@ -309,6 +313,14 @@
     function initCategories() {
         const grid = document.getElementById('categoriesGrid');
         const filtersContainer = document.getElementById('catalogFilters');
+
+        // Deduplicate by stable category ID/slug before drawing either section.
+        const unique = new Map();
+        (storeCategories || []).filter(cat => cat && cat.active !== false).forEach(cat => {
+            const key = String(cat.id || cat.slug || cat.name || '').trim();
+            if (key && !unique.has(key)) unique.set(key, cat);
+        });
+        storeCategories = Array.from(unique.values());
 
         if (grid) {
             grid.innerHTML = storeCategories.map(cat => `
@@ -323,7 +335,6 @@
                 </a>
             `).join('');
 
-            // Category click handlers
             grid.querySelectorAll('.category-card').forEach(card => {
                 card.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -335,7 +346,17 @@
         }
 
         if (filtersContainer) {
-            // Add category filter buttons
+            const allButton = filtersContainer.querySelector('[data-category="all"]') || (() => {
+                const button = document.createElement('button');
+                button.className = 'catalog__filter active';
+                button.dataset.category = 'all';
+                button.setAttribute('role', 'tab');
+                button.setAttribute('aria-selected', 'true');
+                button.textContent = 'Todos';
+                return button;
+            })();
+
+            filtersContainer.replaceChildren(allButton);
             storeCategories.forEach(cat => {
                 const btn = document.createElement('button');
                 btn.className = 'catalog__filter';
@@ -346,18 +367,26 @@
                 filtersContainer.appendChild(btn);
             });
 
-            // Filter click handlers
-            filtersContainer.querySelectorAll('.catalog__filter').forEach(btn => {
-                btn.addEventListener('click', function() {
+            if (filtersContainer.dataset.mvCategoryBound !== 'true') {
+                filtersContainer.dataset.mvCategoryBound = 'true';
+                filtersContainer.addEventListener('click', function(event) {
+                    const button = event.target.closest('.catalog__filter');
+                    if (!button || !filtersContainer.contains(button)) return;
                     filtersContainer.querySelectorAll('.catalog__filter').forEach(b => {
-                        b.classList.remove('active');
-                        b.setAttribute('aria-selected', 'false');
+                        b.classList.toggle('active', b === button);
+                        b.setAttribute('aria-selected', b === button ? 'true' : 'false');
                     });
-                    this.classList.add('active');
-                    this.setAttribute('aria-selected', 'true');
-                    currentCategory = this.dataset.category;
+                    currentCategory = button.dataset.category || 'all';
                     renderProducts();
                 });
+            }
+
+            const selected = filtersContainer.querySelector(`[data-category="${currentCategory}"]`);
+            if (!selected) currentCategory = 'all';
+            filtersContainer.querySelectorAll('.catalog__filter').forEach(button => {
+                const active = button.dataset.category === currentCategory;
+                button.classList.toggle('active', active);
+                button.setAttribute('aria-selected', active ? 'true' : 'false');
             });
         }
     }
@@ -407,6 +436,8 @@
         const input = document.getElementById('searchInput');
 
         if (!toggle || !overlay || !input) return;
+        if (toggle.dataset.mvSearchBound === 'true') return;
+        toggle.dataset.mvSearchBound = 'true';
 
         toggle.addEventListener('click', function() {
             overlay.classList.add('active');
@@ -488,7 +519,7 @@
                             <span class="search-result-item__name">${p.name}</span>
                             <span class="search-result-item__category">${getCategoryName(p.category)}</span>
                         </div>
-                        <span class="search-result-item__price">$${p.price.toFixed(2)}</span>
+                        <span class="search-result-item__price">USD ${Number(p.price || 0).toFixed(2)}${p.priceCup != null ? `<small class=\"search-result-item__cup\">CUP ${Number(p.priceCup).toFixed(2)}</small>` : ''}</span>
                     </a>
                 `).join('')}
             </div>
@@ -500,6 +531,7 @@
             item.addEventListener('click', function(e) {
                 e.preventDefault();
                 const catId = this.dataset.category;
+                const productId = this.dataset.productId;
 
                 // Close search overlay
                 const overlay = document.getElementById('searchOverlay');
@@ -508,9 +540,19 @@
                     overlay.setAttribute('aria-hidden', 'true');
                 }
 
-                // Set category filter and scroll
+                // Apply category, then scroll to the exact matching product card.
                 setCatalogCategory(catId);
-                document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' });
+                window.requestAnimationFrame(() => {
+                    const target = Array.from(document.querySelectorAll('.product-card[data-id]'))
+                        .find(card => card.dataset.id === productId);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        target.classList.add('is-search-target');
+                        window.setTimeout(() => target.classList.remove('is-search-target'), 1800);
+                    } else {
+                        document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
             });
         });
     }
