@@ -51,11 +51,13 @@ class MVCart {
         
         if (existingIndex > -1) {
             this.cart.items[existingIndex].quantity += quantity;
+            if (product.priceCup != null) this.cart.items[existingIndex].priceCup = Number(product.priceCup);
         } else {
             this.cart.items.push({
                 id: product.id,
                 name: product.name,
-                price: product.price,
+                price: Number(product.price || 0),
+                priceCup: product.priceCup == null ? null : Number(product.priceCup),
                 unit: product.unit || 'unidad',
                 image: product.image,
                 quantity: quantity,
@@ -300,6 +302,7 @@ class MVCart {
     openCart() {
         if (this.sidebar) {
             this.sidebar.classList.add('open');
+            document.body.classList.add('cart-open');
             document.body.style.overflow = 'hidden';
             
             // Refresh icons
@@ -312,6 +315,7 @@ class MVCart {
     closeCart() {
         if (this.sidebar) {
             this.sidebar.classList.remove('open');
+            document.body.classList.remove('cart-open');
             document.body.style.overflow = '';
         }
     }
@@ -393,11 +397,11 @@ class MVCart {
             <img src="${item.image}" alt="${item.name}" class="cart-item__image" onerror="this.src='https://via.placeholder.com/60?text=Producto'">
             <div class="cart-item__info">
                 <h4 class="cart-item__name">${item.name}</h4>
-                <p class="cart-item__price">$${item.price.toFixed(2)} / ${item.unit}</p>
+                <p class="cart-item__price">USD ${Number(item.price || 0).toFixed(2)} / ${item.unit}${item.priceCup != null ? `<span class=\"cart-item__cup-price\">CUP ${Number(item.priceCup).toFixed(2)}</span>` : ''}</p>
                 <div class="cart-item__quantity">
-                    <button class="qty-btn qty-minus" data-id="${item.id}">-</button>
-                    <span class="qty-value">${item.quantity}</span>
-                    <button class="qty-btn qty-plus" data-id="${item.id}">+</button>
+                    <button type="button" class="qty-btn qty-minus" data-id="${item.id}" aria-label="Disminuir cantidad de ${item.name}">−</button>
+                    <span class="qty-value" aria-live="polite">${item.quantity}</span>
+                    <button type="button" class="qty-btn qty-plus" data-id="${item.id}" aria-label="Aumentar cantidad de ${item.name}">+</button>
                 </div>
             </div>
             <button class="cart-item__remove" data-id="${item.id}" aria-label="Eliminar ${item.name}">
@@ -462,11 +466,11 @@ class MVCart {
         const deliveryEl = document.getElementById('cartDelivery');
         const totalEl = document.getElementById('cartTotal');
 
-        if (subtotalEl) subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
-        if (discountEl) discountEl.textContent = `-$${discount.toFixed(2)}`;
+        if (subtotalEl) subtotalEl.textContent = `USD ${subtotal.toFixed(2)}`;
+        if (discountEl) discountEl.textContent = `-USD ${discount.toFixed(2)}`;
         if (discountRow) discountRow.style.display = discount > 0 ? 'flex' : 'none';
-        if (deliveryEl) deliveryEl.textContent = delivery === 0 ? 'Gratis' : `$${delivery.toFixed(2)}`;
-        if (totalEl) totalEl.textContent = `$${total.toFixed(2)}`;
+        if (deliveryEl) deliveryEl.textContent = delivery === 0 ? 'Gratis' : `USD ${delivery.toFixed(2)}`;
+        if (totalEl) totalEl.textContent = `USD ${total.toFixed(2)}`;
     }
 
     // ================================================
