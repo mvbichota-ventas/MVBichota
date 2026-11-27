@@ -18,6 +18,7 @@
   let activeIndex = 0;
   let timer = null;
   let paused = false;
+  let lastBannerSignature = '';
 
   function escapeHTML(value) {
     return String(value == null ? '' : value).replace(/[&<>"']/g, char => ({
@@ -104,9 +105,14 @@
         .order('sort_order', { ascending: true });
 
       if (error) throw error;
-      banners = Array.isArray(data) ? data : [];
-      activeIndex = Math.min(activeIndex, Math.max(0, banners.length - 1));
-      render();
+      const nextBanners = Array.isArray(data) ? data : [];
+      const signature = JSON.stringify(nextBanners);
+      if (signature !== lastBannerSignature) {
+        banners = nextBanners;
+        lastBannerSignature = signature;
+        activeIndex = Math.min(activeIndex, Math.max(0, banners.length - 1));
+        render();
+      }
       restartAutoplay();
     } catch (error) {
       // Public RLS may restrict banners. Keep the rest of the storefront usable.

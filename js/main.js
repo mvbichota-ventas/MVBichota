@@ -86,7 +86,7 @@
     const EMBEDDED_BUSINESS = {
         name: "MV Bichota",
         tagline: "Todo lo que necesitas, en un solo lugar",
-        whatsapp: "+535458602",
+        whatsapp: "+5354658602",
         freeDeliveryMin: 50.00
     };
 
