@@ -992,3 +992,6 @@
 }
 
 .combo-brand-icon{width:34px;height:34px;object-fit:contain;display:inline-block;vertical-align:middle;flex:0 0 auto}.combo-fab .combo-brand-icon{width:29px;height:29px;border-radius:50%;background:#fff}.combo-fab{gap:9px}.combo-bar__icon .combo-brand-icon{width:32px;height:32px}.combo-selector__header-main h3{display:flex;align-items:center;gap:9px}.combo-selector__header-main h3 .combo-brand-icon{width:30px;height:30px}.combo-panel__title{display:flex;align-items:center;gap:9px}.combo-panel__title .combo-brand-icon{width:31px;height:31px}
+
+/* Overlay modal stacking: keep combo above all page floaters. */
+.combo-selector,.combo-panel{z-index:11000!important}
