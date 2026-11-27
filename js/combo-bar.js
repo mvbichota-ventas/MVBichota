@@ -111,13 +111,24 @@ class ComboBuilder {
         fab.className = 'combo-fab';
         fab.id = 'comboFab';
         fab.setAttribute('aria-label', 'Arma tu combo');
+        fab.setAttribute('aria-live', 'polite');
         fab.innerHTML = `
             <img class="combo-brand-icon" src="assets/images/mv-bichota-icon.webp" alt="">
-            <span class="combo-fab__text">Arma tu combo</span>
+            <span class="combo-fab__copy">
+                <span class="combo-fab__text">Arma tu combo</span>
+                <span class="combo-fab__status">Elige tus favoritos</span>
+            </span>
+            <span class="combo-fab__badge" aria-hidden="true" hidden>0</span>
         `;
         document.body.appendChild(fab);
-        
-        fab.addEventListener('click', () => this.toggleSelector());
+
+        fab.addEventListener('click', () => {
+            if (this.comboItems.length > 0) {
+                this.openPanel();
+            } else {
+                this.toggleSelector();
+            }
+        });
     }
 
     // ================================================
@@ -384,6 +395,37 @@ class ComboBuilder {
         return this.comboItems.reduce((sum, item) => sum + item.quantity, 0);
     }
 
+    updateFloatingButton(hasItems, total, itemCount, unitCount) {
+        const fab = document.getElementById('comboFab');
+        if (!fab) return;
+
+        const label = fab.querySelector('.combo-fab__text');
+        const status = fab.querySelector('.combo-fab__status');
+        const badge = fab.querySelector('.combo-fab__badge');
+        const icon = fab.querySelector('.combo-brand-icon');
+
+        if (label) label.textContent = hasItems ? 'Ver mi combo' : 'Arma tu combo';
+        if (status) {
+            status.textContent = hasItems
+                ? `${itemCount} producto${itemCount !== 1 ? 's' : ''} · ${total.toFixed(2)}`
+                : 'Elige tus favoritos';
+        }
+        if (badge) {
+            badge.hidden = !hasItems;
+            badge.textContent = String(unitCount);
+        }
+        if (icon) {
+            icon.src = 'assets/images/mv-bichota-icon.webp';
+            icon.alt = '';
+        }
+
+        fab.classList.toggle('has-items', hasItems);
+        fab.setAttribute('aria-label', hasItems
+            ? `Ver mi combo: ${itemCount} productos, total ${total.toFixed(2)}`
+            : 'Arma tu combo');
+        fab.setAttribute('aria-expanded', String(this.isPanelOpen || this.isSelectorOpen));
+    }
+
     // ================================================
     // Render Combo Bar
     // ================================================
@@ -392,6 +434,7 @@ class ComboBuilder {
         const total = this.getComboTotal();
         const itemCount = this.getComboItemCount();
         const unitCount = this.getComboUnitCount();
+        this.updateFloatingButton(hasItems, total, itemCount, unitCount);
         
         if (hasItems) {
             this.showComboBar();
