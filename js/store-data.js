@@ -106,10 +106,16 @@
         if (!product || product.available !== false) return;
         const button = card.querySelector('.product-card__cart-btn');
         if (button) {
-          button.disabled = true;
-          button.setAttribute('aria-disabled', 'true');
-          button.textContent = 'No disponible';
-          button.classList.add('is-unavailable');
+          if (!button.disabled) button.disabled = true;
+          if (button.getAttribute('aria-disabled') !== 'true') {
+            button.setAttribute('aria-disabled', 'true');
+          }
+          if (button.textContent !== 'No disponible') {
+            button.textContent = 'No disponible';
+          }
+          if (!button.classList.contains('is-unavailable')) {
+            button.classList.add('is-unavailable');
+          }
         }
         if (!card.querySelector('.availability-badge')) {
           const badge = document.createElement('span');
