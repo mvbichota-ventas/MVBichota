@@ -282,3 +282,46 @@
 .combo-builder-toast{position:fixed;left:50%;bottom:95px;z-index:10030;transform:translate(-50%,12px);opacity:0;max-width:min(92vw,420px);padding:13px 18px;border-radius:12px;background:#235b3a;color:#fff;box-shadow:0 8px 24px #0003;text-align:center;font-weight:700;transition:opacity .2s,transform .2s}.combo-builder-toast.is-visible{opacity:1;transform:translate(-50%,0)}.combo-builder-toast.is-error{background:#9c1c2b}
 @media(max-width:768px){.whatsapp-float{right:12px;bottom:calc(var(--mobile-bottom-nav-height) + env(safe-area-inset-bottom) + 14px);width:52px;height:52px}.whatsapp-float svg{width:29px;height:29px}}
 @media(prefers-reduced-motion:reduce){.whatsapp-float,.combo-builder-toast{transition:none}}
+
+/* Overlay-aware bottom navigation.
+   Home/Products/Contact stay tappable over combo overlays; cart takes full control. */
+@media(max-width:768px){
+    body.combo-overlay-open .mobile-bottom-nav{z-index:11020;display:block}
+    body.combo-overlay-open .combo-fab,
+    body.combo-overlay-open .back-to-top,
+    body.combo-overlay-open .whatsapp-float,
+    body.combo-overlay-open .combo-bar{
+        opacity:0!important;
+        visibility:hidden!important;
+        pointer-events:none!important;
+    }
+    body.cart-open .mobile-bottom-nav{
+        display:none!important;
+        pointer-events:none!important;
+    }
+    body.cart-open .combo-fab,
+    body.cart-open .back-to-top,
+    body.cart-open .whatsapp-float,
+    body.cart-open .combo-bar{
+        opacity:0!important;
+        visibility:hidden!important;
+        pointer-events:none!important;
+    }
+}
+@media(min-width:769px){
+    body.combo-overlay-open .combo-fab,
+    body.combo-overlay-open .back-to-top,
+    body.combo-overlay-open .whatsapp-float{
+        opacity:0!important;
+        visibility:hidden!important;
+        pointer-events:none!important;
+    }
+}
+
+@media(max-width:768px){
+    /* Keep the bottom navigation fully accessible below combo dialogs. */
+    body.combo-overlay-open .combo-selector,
+    body.combo-overlay-open .combo-panel{
+        bottom:calc(var(--mobile-bottom-nav-height) + env(safe-area-inset-bottom, 0px));
+    }
+}
