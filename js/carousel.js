@@ -71,6 +71,7 @@ class ProductCarousel {
         this.createDots();
         this.setupNavigation();
         this.goToSlide(0);
+        this.resetAutoplay();
     }
 
     getEmbeddedProducts() {
@@ -102,9 +103,16 @@ class ProductCarousel {
         
         if (!this.resizeHandler) {
             this.resizeHandler = () => {
+                const previousItemsPerView = this.itemsPerView;
                 this.calculateItemsPerView();
+                const totalSlides = Math.ceil(this.featuredProducts.length / this.itemsPerView);
+                this.currentIndex = Math.min(this.currentIndex, Math.max(0, totalSlides - 1));
                 this.createDots();
-                this.goToSlide(0);
+                this.goToSlide(this.currentIndex);
+
+                if (previousItemsPerView !== this.itemsPerView) {
+                    this.resetAutoplay();
+                }
             };
             window.addEventListener('resize', this.resizeHandler, { passive: true });
         }
@@ -238,9 +246,15 @@ class ProductCarousel {
     }
 
     calculateItemsPerView() {
-        const width = window.innerWidth;
-        if (width <= 600) {
-            this.itemsPerView = width <= 360 ? 1 : 2;
+        // Use the carousel's real visible width; this also accounts for
+        // container padding and narrow phones with browser UI safe areas.
+        const wrapper = document.querySelector('.carousel__wrapper');
+        const width = wrapper?.clientWidth || window.innerWidth;
+
+        if (width <= 344) {
+            this.itemsPerView = 1;
+        } else if (width <= 600) {
+            this.itemsPerView = 2;
         } else if (width <= 900) {
             this.itemsPerView = 2;
         } else if (width <= 1200) {
@@ -294,15 +308,22 @@ class ProductCarousel {
         const prevBtn = document.getElementById('carouselPrev');
         const nextBtn = document.getElementById('carouselNext');
         const dots = document.querySelectorAll('.carousel__dot');
-        
+
         const totalSlides = Math.ceil(this.featuredProducts.length / this.itemsPerView);
-        
+        const navigationDisabled = totalSlides <= 1;
+
+        // Navigation wraps around, so arrows are disabled only when there
+        // is no second slide to visit.
         if (prevBtn) {
-            prevBtn.classList.toggle('carousel__nav--disabled', this.currentIndex === 0);
+            prevBtn.disabled = navigationDisabled;
+            prevBtn.classList.toggle('carousel__nav--disabled', navigationDisabled);
+            prevBtn.setAttribute('aria-disabled', String(navigationDisabled));
         }
-        
+
         if (nextBtn) {
-            nextBtn.classList.toggle('carousel__nav--disabled', this.currentIndex >= totalSlides - 1);
+            nextBtn.disabled = navigationDisabled;
+            nextBtn.classList.toggle('carousel__nav--disabled', navigationDisabled);
+            nextBtn.setAttribute('aria-disabled', String(navigationDisabled));
         }
         
         dots.forEach((dot, index) => {
@@ -326,11 +347,14 @@ class ProductCarousel {
         
         this.currentIndex = index;
 
-        const item = track.children[0];
-        const itemWidth = item ? item.getBoundingClientRect().width : 300;
-        const gap = parseFloat(window.getComputedStyle(track).columnGap || window.getComputedStyle(track).gap) || 0;
-        const offset = this.currentIndex * this.itemsPerView * (itemWidth + gap);
-        track.style.transform = `translateX(-${offset}px)`;
+        const firstItem = track.children[0];
+        const targetItem = track.children[this.currentIndex * this.itemsPerView];
+        // offsetLeft uses the browser's actual flex layout (including padding,
+        // gaps and fractional card widths), avoiding drift between slides.
+        const offset = firstItem && targetItem
+            ? targetItem.offsetLeft - firstItem.offsetLeft
+            : 0;
+        track.style.transform = `translate3d(-${Math.max(0, offset)}px, 0, 0)`;
 
         this.updateNavigation();
     }
@@ -428,6 +452,11 @@ class ProductCarousel {
 
     startAutoplay() {
         this.stopAutoplay();
+
+        const totalSlides = Math.ceil(this.featuredProducts.length / this.itemsPerView);
+        const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+        if (totalSlides <= 1 || reduceMotion) return;
+
         this.autoplayInterval = setInterval(() => {
             this.next();
         }, this.autoplayDelay);
