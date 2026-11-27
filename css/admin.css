@@ -26,7 +26,30 @@
 @media(max-width:700px) {
   .banner-bulk-delete { width:100%; min-height:44px; }
 }
-\n\n/* MV Bichota Admin — dark mode for dashboard and login */\nhtml[data-theme="dark"] { color-scheme:dark;--ink:#f2eaea;--muted:#b7a9a9;--paper:#151111;--line:#403232;--plum:#a85b65;--plum-dark:#873b45;--rose:#3b2024;--white:#211a1a;--shadow:0 14px 40px rgba(0,0,0,.32); }\nhtml[data-theme="dark"] body,html[data-theme="dark"] .admin-page { background:#151111;color:var(--ink); }\nhtml[data-theme="dark"] .sidebar,html[data-theme="dark"] .topbar,html[data-theme="dark"] .login-card,html[data-theme="dark"] .stat-card,html[data-theme="dark"] .panel,html[data-theme="dark"] .data-card,html[data-theme="dark"] .table-wrap,html[data-theme="dark"] .product-form-section { background:#211a1a;color:var(--ink);border-color:var(--line); }\nhtml[data-theme="dark"] .login-page { background:radial-gradient(circle at top left,#3a1118 0,#171111 48%,#100d0d 100%); }\nhtml[data-theme="dark"] .login-card h1,html[data-theme="dark"] .topbar h1,html[data-theme="dark"] .section-head h2,html[data-theme="dark"] .panel h2,html[data-theme="dark"] .product-form-section h3 { color:#f7eeee; }\nhtml[data-theme="dark"] .login-card input,html[data-theme="dark"] .field input,html[data-theme="dark"] .field textarea,html[data-theme="dark"] .field select,html[data-theme="dark"] .toolbar input,html[data-theme="dark"] .toolbar select,html[data-theme="dark"] .setting-row input,html[data-theme="dark"] .banner-image-editor input[type=file] { background:#171313;color:#f3eaea;border-color:#514040; }\nhtml[data-theme="dark"] .password-wrap { background:#171313;border-color:#514040; }\nhtml[data-theme="dark"] .data-table th { background:#2b2020;color:#cbbbbb; }\nhtml[data-theme="dark"] .data-table td,html[data-theme="dark"] .data-table th { border-color:#403232; }\nhtml[data-theme="dark"] .nav-item { color:#c5b8b8; }\nhtml[data-theme="dark"] .nav-item:hover,html[data-theme="dark"] .nav-item.active { background:#3b2024;color:#f3d9dc; }\nhtml[data-theme="dark"] .user-pill,html[data-theme="dark"] .btn.ghost,html[data-theme="dark"] .pill,html[data-theme="dark"] .icon-close { background:#3b2024;color:#f2dfe1; }\nhtml[data-theme="dark"] .small-btn,html[data-theme="dark"] .banner-image-editor,html[data-theme="dark"] .banner-image-preview,html[data-theme="dark"] .product-image-drop { background:#191414;color:#eee2e2;border-color:#514040; }\nhtml[data-theme="dark"] .product-row:hover { background:#302020; }\nhtml[data-theme="dark"] .editor { background:#211a1a;color:#f2eaea; }\nhtml[data-theme="dark"] .editor::backdrop { background:rgba(0,0,0,.78); }\nhtml[data-theme="dark"] .toast { background:#3b2024;color:#fff; }\nhtml[data-theme="dark"] .theme-toggle { margin-left:auto;border:1px solid #70534b;border-radius:999px;padding:8px 12px;background:#302020;color:#f6e8c0;font-weight:700; }\n.login-page .theme-toggle { position:fixed;top:18px;right:18px;z-index:10;margin:0; }\n.admin-page .topbar .theme-toggle { margin-left:auto; }\n
+
+
+/* MV Bichota Admin — dark mode for dashboard and login */
+html[data-theme="dark"] { color-scheme:dark;--ink:#f2eaea;--muted:#b7a9a9;--paper:#151111;--line:#403232;--plum:#a85b65;--plum-dark:#873b45;--rose:#3b2024;--white:#211a1a;--shadow:0 14px 40px rgba(0,0,0,.32); }
+html[data-theme="dark"] body,html[data-theme="dark"] .admin-page { background:#151111;color:var(--ink); }
+html[data-theme="dark"] .sidebar,html[data-theme="dark"] .topbar,html[data-theme="dark"] .login-card,html[data-theme="dark"] .stat-card,html[data-theme="dark"] .panel,html[data-theme="dark"] .data-card,html[data-theme="dark"] .table-wrap,html[data-theme="dark"] .product-form-section { background:#211a1a;color:var(--ink);border-color:var(--line); }
+html[data-theme="dark"] .login-page { background:radial-gradient(circle at top left,#3a1118 0,#171111 48%,#100d0d 100%); }
+html[data-theme="dark"] .login-card h1,html[data-theme="dark"] .topbar h1,html[data-theme="dark"] .section-head h2,html[data-theme="dark"] .panel h2,html[data-theme="dark"] .product-form-section h3 { color:#f7eeee; }
+html[data-theme="dark"] .login-card input,html[data-theme="dark"] .field input,html[data-theme="dark"] .field textarea,html[data-theme="dark"] .field select,html[data-theme="dark"] .toolbar input,html[data-theme="dark"] .toolbar select,html[data-theme="dark"] .setting-row input,html[data-theme="dark"] .banner-image-editor input[type=file] { background:#171313;color:#f3eaea;border-color:#514040; }
+html[data-theme="dark"] .password-wrap { background:#171313;border-color:#514040; }
+html[data-theme="dark"] .data-table th { background:#2b2020;color:#cbbbbb; }
+html[data-theme="dark"] .data-table td,html[data-theme="dark"] .data-table th { border-color:#403232; }
+html[data-theme="dark"] .nav-item { color:#c5b8b8; }
+html[data-theme="dark"] .nav-item:hover,html[data-theme="dark"] .nav-item.active { background:#3b2024;color:#f3d9dc; }
+html[data-theme="dark"] .user-pill,html[data-theme="dark"] .btn.ghost,html[data-theme="dark"] .pill,html[data-theme="dark"] .icon-close { background:#3b2024;color:#f2dfe1; }
+html[data-theme="dark"] .small-btn,html[data-theme="dark"] .banner-image-editor,html[data-theme="dark"] .banner-image-preview,html[data-theme="dark"] .product-image-drop { background:#191414;color:#eee2e2;border-color:#514040; }
+html[data-theme="dark"] .product-row:hover { background:#302020; }
+html[data-theme="dark"] .editor { background:#211a1a;color:#f2eaea; }
+html[data-theme="dark"] .editor::backdrop { background:rgba(0,0,0,.78); }
+html[data-theme="dark"] .toast { background:#3b2024;color:#fff; }
+html[data-theme="dark"] .theme-toggle { margin-left:auto;border:1px solid #70534b;border-radius:999px;padding:8px 12px;background:#302020;color:#f6e8c0;font-weight:700; }
+.login-page .theme-toggle { position:fixed;top:18px;right:18px;z-index:10;margin:0; }
+.admin-page .topbar .theme-toggle { margin-left:auto; }
+
 /* Theme switch control on admin and login screens */
 .theme-toggle{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:40px;padding:8px 12px;border:1px solid #d9c7a0;border-radius:999px;background:#fff;color:#5c0000;font-weight:700;cursor:pointer;transition:background .2s ease,border-color .2s ease}
 .theme-toggle:hover{background:#fbf5e8;border-color:#c9a227}
