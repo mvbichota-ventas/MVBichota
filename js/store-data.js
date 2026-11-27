@@ -146,18 +146,18 @@
       let timeoutId;
       const request = Promise.all([
         client.from('products')
-          .select('*')
+          .select('id,legacy_id,slug,name,description,price,sale_price,unit,category_id,image_url,images,stock,is_available,active,featured,sort_order,allow_in_combo,combo_order,featured_order')
           .eq('active', true)
           .order('sort_order', { ascending: true }),
         client.from('categories')
-          .select('*')
+          .select('id,name,slug,description,image_url,active,allow_in_combo,sort_order,icon')
           .eq('active', true)
           .order('sort_order', { ascending: true })
       ]);
       const timeout = new Promise((_, reject) => {
         timeoutId = setTimeout(
-          () => reject(new Error('Supabase tardó más de 8 segundos en responder')),
-          8000
+          () => reject(new Error('Supabase tardó más de 6 segundos en responder')),
+          6000
         );
       });
 
