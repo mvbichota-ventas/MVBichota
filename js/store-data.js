@@ -140,80 +140,97 @@
   }
 
   async function loadCatalog() {
-    // Consultar Supabase primero: el JSON local solo se descarga si Supabase falla.
-    if (!window.supabase || !window.MV_SUPABASE_URL || !window.MV_SUPABASE_KEY) {
-      throw new Error('Supabase no está configurado en la tienda');
-    }
-
-    const client = window.supabase.createClient(
-      window.MV_SUPABASE_URL,
-      window.MV_SUPABASE_KEY,
-      { auth: { persistSession: false, autoRefreshToken: false } }
-    );
-
-    let timeoutId;
-    const remoteRequest = Promise.all([
-      // '*' evita que una columna opcional nueva o todavía no creada rompa el catálogo.
-      client.from('products')
-        .select('*')
-        .eq('active', true)
-        .order('sort_order', { ascending: true }),
-      client.from('categories')
-        .select('*')
-        .eq('active', true)
-        .order('sort_order', { ascending: true })
-    ]);
-    const timeout = new Promise((_, reject) => {
-      timeoutId = setTimeout(
-        () => reject(new Error('La consulta de Supabase superó el tiempo de espera')),
-        8000
-      );
-    });
-
-    let productResult;
-    let categoryResult;
     try {
-      [productResult, categoryResult] = await Promise.race([remoteRequest, timeout]);
-    } finally {
-      clearTimeout(timeoutId);
-    }
-
-    if (productResult.error) throw productResult.error;
-
-    // La consulta de productos es la fuente principal. Si falla categorías,
-    // se conserva el catálogo y se completan nombres con el JSON de respaldo.
-    let localCatalog = { products: [], categories: [], business: {} };
-    if (categoryResult.error) {
-      console.warn('[MV Bichota] No se pudieron cargar categorías desde Supabase:', categoryResult.error.message);
-      try { localCatalog = await fallback(); } catch (_) {}
-    }
-
-    const categoryRows = !categoryResult.error && Array.isArray(categoryResult.data)
-      ? categoryResult.data
-      : [];
-    const categories = categoryRows.map(mapCategory);
-    const categoryById = new Map(categoryRows.map(category => [category.id, category]));
-    const products = (productResult.data || []).map(product => mapProduct(product, categoryById));
-
-    products.forEach(product => {
-      if (!product.category) {
-        const localCategory = (localCatalog.categories || [])
-          .find(category => String(category.id) === String(product.categoryId));
-        if (localCategory) product.category = localCategory.id;
+      // Supabase es la fuente principal. El JSON solo se solicita si falla la consulta.
+      if (!window.supabase || !window.MV_SUPABASE_URL || !window.MV_SUPABASE_KEY) {
+        throw new Error('Supabase no está configurado en la tienda');
       }
-    });
 
-    categories.forEach(category => {
-      category.count = products.filter(product => product.category === category.id).length;
-    });
+      const client = window.supabase.createClient(
+        window.MV_SUPABASE_URL,
+        window.MV_SUPABASE_KEY,
+        { auth: { persistSession: false, autoRefreshToken: false } }
+      );
 
-    // Un resultado vacío de Supabase es válido: no mostrar productos antiguos del JSON.
-    return {
-      ...localCatalog,
-      products,
-      categories: categories.length ? categories : (localCatalog.categories || []),
-      source: 'supabase'
-    };
+      let timeoutId;
+      const remoteRequest = Promise.all([
+        // Consultar columnas existentes evita depender de campos opcionales específicos.
+        client.from('products')
+          .select('*')
+          .eq('active', true)
+          .order('sort_order', { ascending: true }),
+        client.from('categories')
+          .select('*')
+          .eq('active', true)
+          .order('sort_order', { ascending: true })
+      ]);
+      const timeout = new Promise((_, reject) => {
+        timeoutId = setTimeout(
+          () => reject(new Error('La consulta de Supabase superó el tiempo de espera')),
+          8000
+        );
+      });
+
+      let productResult;
+      let categoryResult;
+      try {
+        [productResult, categoryResult] = await Promise.race([remoteRequest, timeout]);
+      } finally {
+        clearTimeout(timeoutId);
+      }
+
+      if (productResult.error) throw productResult.error;
+
+      let localCatalog = { products: [], categories: [], business: {} };
+      if (categoryResult.error) {
+        console.warn('[MV Bichota] No se pudieron cargar categorías desde Supabase:', categoryResult.error.message);
+        try { localCatalog = await fallback(); } catch (_) {}
+      }
+
+      const categoryRows = !categoryResult.error && Array.isArray(categoryResult.data)
+        ? categoryResult.data
+        : [];
+      const categories = categoryRows.map(mapCategory);
+      const categoryById = new Map(categoryRows.map(category => [category.id, category]));
+      const products = (productResult.data || []).map(product => mapProduct(product, categoryById));
+
+      products.forEach(product => {
+        if (!product.category) {
+          const localCategory = (localCatalog.categories || [])
+            .find(category => String(category.id) === String(product.categoryId));
+          if (localCategory) product.category = localCategory.id;
+        }
+      });
+
+      categories.forEach(category => {
+        category.count = products.filter(product => product.category === category.id).length;
+      });
+
+      // Una respuesta vacía es válida: no mostrar datos antiguos del archivo JSON.
+      return {
+        ...localCatalog,
+        products,
+        categories: categories.length ? categories : (localCatalog.categories || []),
+        source: 'supabase'
+      };
+    } catch (error) {
+      console.error('[MV Bichota] No se pudo cargar el catálogo desde Supabase:', error);
+      let localCatalog = { products: [], categories: [], business: {} };
+      try {
+        localCatalog = await fallback();
+      } catch (fallbackError) {
+        console.error('[MV Bichota] También falló el catálogo local:', fallbackError);
+      }
+
+      return {
+        ...localCatalog,
+        products: (localCatalog.products || [])
+          .filter(product => product.active !== false)
+          .map(product => ({ ...product, available: Number(product.stock || 0) > 0 })),
+        categories: (localCatalog.categories || []).filter(category => category.active !== false),
+        source: 'json'
+      };
+    }
   }
 
   function load() {
