@@ -140,69 +140,80 @@
   }
 
   async function loadCatalog() {
-    let localCatalog;
-    try {
-      localCatalog = await fallback();
-    } catch (error) {
-      localCatalog = { products: [], categories: [] };
+    // Consultar Supabase primero: el JSON local solo se descarga si Supabase falla.
+    if (!window.supabase || !window.MV_SUPABASE_URL || !window.MV_SUPABASE_KEY) {
+      throw new Error('Supabase no está configurado en la tienda');
     }
 
-    try {
-      if (!window.supabase || !window.MV_SUPABASE_URL || !window.MV_SUPABASE_KEY) {
-        throw new Error('Supabase no configurado');
-      }
+    const client = window.supabase.createClient(
+      window.MV_SUPABASE_URL,
+      window.MV_SUPABASE_KEY,
+      { auth: { persistSession: false, autoRefreshToken: false } }
+    );
 
-      const client = window.supabase.createClient(
-        window.MV_SUPABASE_URL,
-        window.MV_SUPABASE_KEY,
-        { auth: { persistSession: false, autoRefreshToken: false } }
+    let timeoutId;
+    const remoteRequest = Promise.all([
+      // '*' evita que una columna opcional nueva o todavía no creada rompa el catálogo.
+      client.from('products')
+        .select('*')
+        .eq('active', true)
+        .order('sort_order', { ascending: true }),
+      client.from('categories')
+        .select('*')
+        .eq('active', true)
+        .order('sort_order', { ascending: true })
+    ]);
+    const timeout = new Promise((_, reject) => {
+      timeoutId = setTimeout(
+        () => reject(new Error('La consulta de Supabase superó el tiempo de espera')),
+        8000
       );
-      const [productResult, categoryResult] = await Promise.all([
-        client.from('products')
-          .select('*, categories(slug,name)')
-          .eq('active', true)
-          .order('sort_order'),
-        client.from('categories')
-          .select('*')
-          .eq('active', true)
-          .order('sort_order')
-      ]);
+    });
 
-      if (productResult.error) throw productResult.error;
-      if (categoryResult.error) throw categoryResult.error;
-      if (!productResult.data || productResult.data.length === 0) {
-        throw new Error('Supabase no contiene productos; se usa el catálogo de respaldo');
-      }
-
-      const categories = categoryResult.data.map(mapCategory);
-      const categoryById = new Map(categoryResult.data.map(category => [category.id, category]));
-      const products = productResult.data.map(product => mapProduct(product, categoryById));
-
-      products.forEach(product => {
-        if (!product.category) {
-          const localCategory = (localCatalog.categories || [])
-            .find(category => category.id === product.categoryId);
-          if (localCategory) product.category = localCategory.id;
-        }
-      });
-      categories.forEach(category => {
-        category.count = products.filter(product => product.category === category.id).length;
-      });
-
-      return { ...localCatalog, products, categories, source: 'supabase' };
-    } catch (error) {
-      console.warn('[MV Bichota] Catálogo de respaldo:', error.message);
-      const products = (localCatalog.products || [])
-        .filter(product => product.active !== false)
-        .map(product => ({ ...product, available: Number(product.stock || 0) > 0 }));
-
-      return {
-        ...localCatalog,
-        products,
-        categories: (localCatalog.categories || []).filter(category => category.active !== false),
-        source: 'json'
-      };
+    let productResult;
+    let categoryResult;
+    try {
+      [productResult, categoryResult] = await Promise.race([remoteRequest, timeout]);
+    } finally {
+      clearTimeout(timeoutId);
     }
+
+    if (productResult.error) throw productResult.error;
+
+    // La consulta de productos es la fuente principal. Si falla categorías,
+    // se conserva el catálogo y se completan nombres con el JSON de respaldo.
+    let localCatalog = { products: [], categories: [], business: {} };
+    if (categoryResult.error) {
+      console.warn('[MV Bichota] No se pudieron cargar categorías desde Supabase:', categoryResult.error.message);
+      try { localCatalog = await fallback(); } catch (_) {}
+    }
+
+    const categoryRows = !categoryResult.error && Array.isArray(categoryResult.data)
+      ? categoryResult.data
+      : [];
+    const categories = categoryRows.map(mapCategory);
+    const categoryById = new Map(categoryRows.map(category => [category.id, category]));
+    const products = (productResult.data || []).map(product => mapProduct(product, categoryById));
+
+    products.forEach(product => {
+      if (!product.category) {
+        const localCategory = (localCatalog.categories || [])
+          .find(category => String(category.id) === String(product.categoryId));
+        if (localCategory) product.category = localCategory.id;
+      }
+    });
+
+    categories.forEach(category => {
+      category.count = products.filter(product => product.category === category.id).length;
+    });
+
+    // Un resultado vacío de Supabase es válido: no mostrar productos antiguos del JSON.
+    return {
+      ...localCatalog,
+      products,
+      categories: categories.length ? categories : (localCatalog.categories || []),
+      source: 'supabase'
+    };
   }
 
   function load() {
