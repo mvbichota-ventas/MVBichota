@@ -2731,3 +2731,44 @@ ul {
     .cart-item__name { font-size: .82rem; }
     .cart-item__price { font-size: .76rem; }
 }
+
+
+/* Banners administrables de Supabase */
+.managed-banners { padding: clamp(18px, 3vw, 34px) 0; background: var(--color-bg-alt); }
+.managed-banners[hidden] { display: none !important; }
+.managed-banner {
+    position: relative; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    min-height: 230px; overflow: hidden; border-radius: 20px; background: #4b080d;
+    color: #fff; box-shadow: 0 12px 30px rgba(30, 10, 10, .16);
+}
+.managed-banner__image { min-height: 230px; background: linear-gradient(135deg, #570b10, #a51d22); }
+.managed-banner__image img { width: 100%; height: 100%; min-height: 230px; display: block; object-fit: cover; }
+.managed-banner__content {
+    display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+    gap: 12px; padding: clamp(20px, 4vw, 46px);
+    background: linear-gradient(125deg, #52090e, #8c151a);
+}
+.managed-banner__content h2 { margin: 0; color: #fff; font: 700 clamp(1.35rem, 3vw, 2.4rem)/1.15 var(--font-serif); }
+.managed-banner__content p { margin: 0; color: rgba(255,255,255,.9); line-height: 1.5; }
+.managed-banner__button {
+    display: inline-flex; align-items: center; justify-content: center; min-height: 44px;
+    padding: 10px 18px; border-radius: 999px; background: #d7ad45; color: #2c0909;
+    font-weight: 800; text-decoration: none;
+}
+.managed-banners__controls { display: flex; justify-content: center; align-items: center; gap: 14px; padding-top: 12px; }
+.managed-banners__controls[hidden] { display: none !important; }
+.managed-banners__controls > button {
+    width: 34px; height: 34px; border: 0; border-radius: 50%; cursor: pointer;
+    background: #650c13; color: #fff; font-size: 1.35rem;
+}
+.managed-banners__dots { display: flex; align-items: center; gap: 8px; }
+.managed-banners__dot { width: 9px; height: 9px; padding: 0; border: 0; border-radius: 50%; background: #c7b7b7; cursor: pointer; }
+.managed-banners__dot.active { width: 22px; border-radius: 99px; background: #8f1119; }
+@media (max-width: 640px) {
+    .managed-banners { padding: 14px 0; }
+    .managed-banner { grid-template-columns: 1fr; min-height: 0; }
+    .managed-banner__image, .managed-banner__image img { min-height: 150px; max-height: 190px; }
+    .managed-banner__content { padding: 18px; gap: 9px; }
+    .managed-banner__content h2 { font-size: 1.35rem; }
+    .managed-banner__content p { font-size: .9rem; }
+}
