@@ -249,3 +249,11 @@ html[data-theme="dark"] .crop-dialog-pro .crop-toolbar select{background:#302528
 .banner-crop-rotate{display:flex;gap:7px;flex-wrap:wrap;align-items:end}
 .banner-crop-modal>.hint{margin:0 0 12px}
 @media(max-width:600px){.banner-crop-modal{padding:16px}.banner-crop-stage{height:42vh;min-height:220px}.banner-crop-tools{grid-template-columns:1fr}.banner-crop-head h2{font-size:20px}.banner-crop-rotate .btn{flex:1}}
+
+/* Robust dimensions for CropperJS inside the banner editor dialog */
+.banner-crop-stage{position:relative;width:100%;height:min(54vh,520px);min-height:280px;display:block;background:#211d24}
+.banner-crop-stage>.cropper-container{width:100%!important;height:100%!important;max-width:none!important;max-height:none!important}
+.banner-crop-stage .cropper-wrap-box,.banner-crop-stage .cropper-canvas,.banner-crop-stage .cropper-drag-box,.banner-crop-stage .cropper-crop-box{max-width:none}
+.banner-crop-stage .cropper-canvas img{max-width:none!important;max-height:none!important}
+.banner-crop-stage .cropper-view-box{outline:1px solid rgba(255,255,255,.9)}
+@media(max-width:600px){.banner-crop-stage{height:42vh;min-height:240px}}
