@@ -473,3 +473,64 @@
     .carousel__item { flex-basis: calc(100% - 8px); }
     .carousel-card__title { font-size: .95rem; }
 }
+
+
+/* Featured products: one coordinated transform-based carousel on all devices. */
+.carousel__track {
+    overflow: visible;
+    flex-wrap: nowrap;
+    touch-action: pan-y;
+}
+.carousel__item {
+    flex-shrink: 0;
+}
+.carousel__nav:disabled {
+    opacity: .28;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+@media (max-width: 480px) {
+    /* Disable native horizontal scrolling: touch/swipe is handled by carousel.js. */
+    .carousel__wrapper {
+        overflow: hidden !important;
+        -webkit-overflow-scrolling: auto;
+    }
+    .carousel__track {
+        overflow: visible !important;
+        scroll-snap-type: none !important;
+        scrollbar-width: none;
+        touch-action: pan-y;
+    }
+    .carousel__item {
+        scroll-snap-align: unset !important;
+    }
+    /* Keep navigation visible so every group of featured items can be reached. */
+    .carousel__nav {
+        display: flex !important;
+        width: 34px;
+        height: 34px;
+        top: 43%;
+        background: rgba(255,255,255,.96);
+        z-index: 12;
+    }
+    .carousel__nav--prev { left: 2px; }
+    .carousel__nav--next { right: 2px; }
+    .carousel__dots {
+        gap: 7px;
+        margin-top: 14px;
+    }
+    .carousel__dot {
+        width: 8px;
+        height: 8px;
+    }
+    .carousel__dot.active {
+        width: 22px;
+    }
+}
+
+@media (max-width: 352px) {
+    .carousel__item {
+        flex-basis: calc(100% - 8px);
+    }
+}
