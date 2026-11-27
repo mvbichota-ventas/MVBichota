@@ -354,8 +354,7 @@ class ComboBuilder {
     clearCombo() {
         if (this.comboItems.length === 0) return;
         
-        // Vaciar el combo de inmediato; el estado se mantiene en localStorage
-        // hasta que el usuario confirme esta acción mediante el propio botón.
+        // Vaciar el combo de inmediato, sin alertas nativas del navegador.
         this.comboItems = [];
         
         this.saveToStorage();
@@ -531,6 +530,7 @@ class ComboBuilder {
                 id: item.id,
                 name: item.name,
                 price: item.price,
+                priceCup: item.priceCup == null ? null : Number(item.priceCup),
                 quantity: item.quantity,
                 unit: item.unit,
                 image: item.image
