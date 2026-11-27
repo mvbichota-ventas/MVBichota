@@ -317,3 +317,11 @@
         pointer-events:none!important;
     }
 }
+
+@media(max-width:768px){
+    /* Keep the bottom navigation fully accessible below combo dialogs. */
+    body.combo-overlay-open .combo-selector,
+    body.combo-overlay-open .combo-panel{
+        bottom:calc(var(--mobile-bottom-nav-height) + env(safe-area-inset-bottom, 0px));
+    }
+}
