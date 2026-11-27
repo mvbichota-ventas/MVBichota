@@ -251,7 +251,7 @@ class ProductCarousel {
         const wrapper = document.querySelector('.carousel__wrapper');
         const width = wrapper?.clientWidth || window.innerWidth;
 
-        if (width <= 352) {
+        if (width <= 344) {
             this.itemsPerView = 1;
         } else if (width <= 600) {
             this.itemsPerView = 2;
