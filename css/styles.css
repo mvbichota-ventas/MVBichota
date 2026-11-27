@@ -2872,3 +2872,270 @@ body.cart-open .cart-sidebar{z-index:12000}
 .footer__links .footer__link i{width:15px;height:15px;flex:0 0 15px}
 @media(max-width:768px){.contact-showcase{padding:38px 0}.contact-showcase__grid{grid-template-columns:1fr;gap:25px}.contact-showcase__map{min-height:250px}.contact-showcase__map iframe,.contact-showcase__map-placeholder{height:250px;min-height:250px}.contact-showcase__map-heading{align-items:flex-start;flex-direction:column;gap:5px}.footer__grid{grid-template-columns:repeat(2,minmax(0,1fr))}.footer__brand{grid-column:1/-1}}
 @media(max-width:380px){.contact-showcase__button{width:100%;justify-content:center}.footer__grid{gap:20px 12px}}
+
+
+/* =========================================================
+   MV BICHOTA — Catálogo premium vino, dorado y negro
+   Capa visual: no modifica carrito, favoritos ni datos.
+   ========================================================= */
+#catalogo {
+  background: #fbf9f7;
+}
+#catalogo .catalog__header {
+  margin-bottom: 2rem;
+}
+#catalogo .catalog__header .section-label {
+  color: #a98232;
+  letter-spacing: .18em;
+}
+#catalogo .catalog__header .section-title {
+  color: #650c13;
+}
+#catalogo .catalog__controls {
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 1.25rem;
+}
+#catalogo .catalog__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+#catalogo .catalog__filter {
+  border: 1px solid #e8ded7;
+  border-radius: 999px;
+  padding: .62rem 1.05rem;
+  background: #fff;
+  color: #5d5050;
+  font-weight: 650;
+  transition: background .2s ease, color .2s ease, border-color .2s ease, transform .2s ease;
+}
+#catalogo .catalog__filter:hover {
+  border-color: #a98232;
+  color: #650c13;
+  transform: translateY(-1px);
+}
+#catalogo .catalog__filter.active {
+  border-color: #650c13;
+  background: #650c13;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(101,12,19,.14);
+}
+#catalogo .catalog__sort-select {
+  min-height: 42px;
+  border: 1px solid #e5dcd5;
+  border-radius: 10px;
+  background: #fff;
+  color: #332b2b;
+  padding: 0 2.25rem 0 .9rem;
+}
+#catalogo .catalog__count {
+  margin: 0 0 1rem;
+  color: #837777;
+  font-size: .84rem;
+  font-weight: 600;
+}
+#catalogo .products__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;
+  align-items: stretch;
+}
+#catalogo .product-card {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #eee7e1;
+  border-radius: 17px;
+  background: #fff;
+  box-shadow: 0 5px 18px rgba(45,25,22,.055);
+  transition: transform .24s ease, box-shadow .24s ease, border-color .24s ease;
+}
+#catalogo .product-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(169,130,50,.55);
+  box-shadow: 0 14px 30px rgba(45,25,22,.11);
+}
+#catalogo .product-card__image {
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  background: #faf8f6;
+  border-bottom: 1px solid #f1ece7;
+}
+#catalogo .product-card__image img {
+  width: 100%;
+  height: 100%;
+  padding: 17px;
+  object-fit: contain;
+  transition: transform .3s ease;
+}
+#catalogo .product-card:hover .product-card__image img {
+  transform: scale(1.045);
+}
+#catalogo .product-card__badge {
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  padding: 6px 10px;
+  border: 1px solid rgba(169,130,50,.28);
+  border-radius: 999px;
+  background: #f4e8c9;
+  color: #6a4b12;
+  font-size: .65rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  box-shadow: 0 2px 8px rgba(40,20,10,.06);
+}
+#catalogo .product-card__badge.new {
+  border-color: #650c13;
+  background: #650c13;
+  color: #fff;
+}
+#catalogo .product-card__wishlist {
+  top: 11px;
+  right: 11px;
+  display: flex;
+  width: 36px;
+  height: 36px;
+  opacity: 1;
+  transform: none;
+  border: 1px solid #eee6df;
+  background: rgba(255,255,255,.96);
+  color: #5b2529;
+  box-shadow: 0 3px 10px rgba(30,15,15,.09);
+}
+#catalogo .product-card__wishlist i {
+  width: 17px;
+  height: 17px;
+  color: #650c13;
+}
+#catalogo .product-card__wishlist.active {
+  border-color: #650c13;
+  background: #fff5f4;
+  color: #650c13;
+}
+#catalogo .product-card__content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 15px 16px 16px;
+  gap: 0;
+}
+#catalogo .product-card__category {
+  margin: 0 0 7px;
+  color: #a98232;
+  font-size: .67rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  line-height: 1.35;
+}
+#catalogo .product-card__title {
+  display: -webkit-box;
+  min-height: 2.7em;
+  margin: 0 0 8px;
+  overflow: hidden;
+  color: #292323;
+  font-size: .96rem;
+  font-weight: 700;
+  line-height: 1.4;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+#catalogo .product-card__description {
+  display: -webkit-box;
+  min-height: 0;
+  margin: 0 0 12px;
+  overflow: hidden;
+  color: #827777;
+  font-size: .78rem;
+  line-height: 1.45;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+#catalogo .product-card__price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 5px 9px;
+  margin: auto 0 13px;
+  padding-top: 7px;
+}
+#catalogo .product-card__price .price-current {
+  color: #760e18;
+  font-size: 1.16rem;
+  font-weight: 800;
+  letter-spacing: -.02em;
+}
+#catalogo .product-card__price .price-original {
+  color: #9a8d88;
+  font-size: .82rem;
+  text-decoration: line-through;
+}
+#catalogo .product-card__price .price-cup {
+  flex-basis: 100%;
+  color: #75645e;
+  font-size: .78rem;
+  font-weight: 650;
+}
+#catalogo .product-card__cart-btn {
+  display: flex;
+  width: 100%;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 1px solid #171717;
+  border-radius: 9px;
+  background: #171717;
+  color: #fff;
+  font-size: .86rem;
+  font-weight: 750;
+  transition: background .2s ease, border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+#catalogo .product-card__cart-btn:hover {
+  border-color: #650c13;
+  background: #650c13;
+  color: #fff;
+  box-shadow: 0 5px 13px rgba(101,12,19,.2);
+  transform: translateY(-1px);
+}
+#catalogo .product-card__cart-btn:focus-visible,
+#catalogo .product-card__wishlist:focus-visible,
+#catalogo .catalog__filter:focus-visible {
+  outline: 3px solid rgba(169,130,50,.45);
+  outline-offset: 3px;
+}
+#catalogo .product-card__cart-btn i {
+  width: 18px;
+  height: 18px;
+}
+@media (max-width: 1100px) {
+  #catalogo .products__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+}
+@media (max-width: 760px) {
+  #catalogo .catalog__controls { align-items: stretch; flex-direction: column; }
+  #catalogo .catalog__filters { flex-wrap: nowrap; overflow-x: auto; padding: 2px 2px 9px; scrollbar-width: thin; }
+  #catalogo .catalog__filter { flex: 0 0 auto; }
+  #catalogo .catalog__sort { width: 100%; }
+  #catalogo .catalog__sort-select { width: 100%; }
+  #catalogo .products__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  #catalogo .product-card { border-radius: 13px; }
+  #catalogo .product-card__image img { padding: 10px; }
+  #catalogo .product-card__content { padding: 11px 11px 12px; }
+  #catalogo .product-card__title { font-size: .86rem; min-height: 2.65em; }
+  #catalogo .product-card__description { font-size: .72rem; margin-bottom: 9px; }
+  #catalogo .product-card__price .price-current { font-size: 1.02rem; }
+  #catalogo .product-card__cart-btn { min-height: 42px; padding: 8px 6px; font-size: .78rem; }
+  #catalogo .product-card__wishlist { width: 32px; height: 32px; top: 8px; right: 8px; }
+  #catalogo .product-card__badge { top: 8px; left: 8px; padding: 5px 7px; font-size: .58rem; }
+}
+@media (max-width: 360px) {
+  #catalogo .products__grid { gap: 9px; }
+  #catalogo .product-card__content { padding: 9px; }
+  #catalogo .product-card__cart-btn { font-size: .72rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #catalogo .product-card,
+  #catalogo .product-card__image img,
+  #catalogo .product-card__cart-btn { transition: none; }
+}
