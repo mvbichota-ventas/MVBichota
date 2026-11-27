@@ -2782,3 +2782,7 @@ ul {
 .managed-banner{animation:mvBannerEnter .65s cubic-bezier(.2,.75,.25,1) both}.managed-banner__image{overflow:hidden}.managed-banner__image img{animation:mvBannerImageDrift 8s ease-in-out both;transform-origin:center}.managed-banner__content h2,.managed-banner__content p,.managed-banner__button{animation:mvBannerTextEnter .6s ease both}.managed-banner__content p{animation-delay:.08s}.managed-banner__button{animation-delay:.16s}
 @keyframes mvBannerEnter{from{opacity:0;transform:translateY(14px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}@keyframes mvBannerImageDrift{from{transform:scale(1.045)}to{transform:scale(1)}}@keyframes mvBannerTextEnter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){.managed-banner,.managed-banner__image img,.managed-banner__content h2,.managed-banner__content p,.managed-banner__button{animation:none!important}}
+
+/* The cart must be the highest interactive layer on mobile. */
+.cart-sidebar{z-index:12000}
+body.cart-open .cart-sidebar{z-index:12000}
