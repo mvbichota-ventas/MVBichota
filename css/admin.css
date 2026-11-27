@@ -14,3 +14,15 @@
 .banner-image-editor{display:grid;gap:12px;padding:15px;border:1px solid var(--line);border-radius:12px;background:#fcf9fc;margin:12px 0}.banner-image-editor p{margin:5px 0 0}.banner-image-preview{min-height:130px;max-height:260px;display:grid;place-items:center;overflow:hidden;border:1px dashed #d8c6db;border-radius:10px;background:#fff;color:var(--muted);font-size:13px;padding:8px}.banner-image-preview img{display:block;max-width:100%;max-height:240px;object-fit:contain;border-radius:8px}.banner-image-editor input[type=file]{padding:9px;background:#fff}
 
 .banner-image-editor{display:grid;gap:12px;padding:15px;border:1px solid var(--line);border-radius:12px;background:#fcf9fc;margin:12px 0}.banner-image-editor p{margin:5px 0 0}.banner-image-preview{min-height:130px;max-height:260px;display:grid;place-items:center;overflow:hidden;border:1px dashed #d8c6db;border-radius:10px;background:#fff;color:var(--muted);font-size:13px;padding:8px}.banner-image-preview img{display:block;max-width:100%;max-height:240px;object-fit:contain;border-radius:8px}.banner-image-editor input[type=file]{padding:9px;background:#fff}
+
+
+/* Banner bulk actions and clickable product rows */
+.banner-bulk-delete { margin: 0 0 14px; }
+.banner-table th:first-child, .banner-table td:first-child { width:44px; text-align:center; }
+.banner-table input[type="checkbox"] { width:17px; height:17px; accent-color:var(--plum); cursor:pointer; }
+.product-row { cursor:pointer; }
+.product-row:hover { background:#fbf7fc; }
+.product-row:focus-within { outline:2px solid #d8c6db; outline-offset:-2px; }
+@media(max-width:700px) {
+  .banner-bulk-delete { width:100%; min-height:44px; }
+}
