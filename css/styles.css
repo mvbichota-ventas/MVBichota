@@ -3139,3 +3139,24 @@ body.cart-open .cart-sidebar{z-index:12000}
   #catalogo .product-card__image img,
   #catalogo .product-card__cart-btn { transition: none; }
 }
+
+
+/* Ajuste de ancho real: evita que la última tarjeta se corte en escritorio. */
+@media (min-width: 761px) and (max-width: 1599px) {
+  #catalogo .products__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    width: 100%;
+    max-width: 100%;
+  }
+  #catalogo .products__grid > .product-card {
+    width: 100%;
+    min-width: 0;
+  }
+}
+@media (min-width: 1600px) {
+  #catalogo .products__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    width: 100%;
+    max-width: 100%;
+  }
+}
