@@ -16,7 +16,7 @@
   }
   function paint(button) {
     var dark = root.getAttribute('data-theme') === 'dark';
-    button.textContent = dark ? '☀' : '☾';
+    button.innerHTML = '<span class="theme-toggle__icon" aria-hidden="true">' + (dark ? '☀' : '☾') + '</span>';
     button.setAttribute('aria-label', dark ? 'Activar modo claro' : 'Activar modo oscuro');
     button.setAttribute('aria-pressed', dark ? 'true' : 'false');
     button.setAttribute('title', dark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
