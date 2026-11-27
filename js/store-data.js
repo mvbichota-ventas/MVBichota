@@ -44,14 +44,90 @@
       category: category.slug || '',
       categoryId: product.category_id || null,
       image: product.image_url || (Array.isArray(product.images) ? product.images[0] : null) || '',
-      images: Array.isArray(product.images) ? product.images : [],
+      images: Array.isArray(product.images) ? product.images.filter(image => typeof image === 'string') : [],
       stock: Number(product.stock || 0),
+      available: product.is_available !== false && Number(product.stock || 0) > 0,
       active: product.active !== false,
       featured: product.featured === true,
       featuredOrder: Number(product.featured_order || 0),
       comboOrder: Number(product.combo_order || product.sort_order || 0),
-      allowInCombo: product.allow_in_combo !== false
+      allowInCombo: product.allow_in_combo !== false && product.is_available !== false && Number(product.stock || 0) > 0
     };
+  }
+
+
+  function ensureCatalogStylesheet() {
+    if (document.querySelector('link[data-mv-catalog-styles]')) return;
+    const stylesheet = document.createElement('link');
+    stylesheet.rel = 'stylesheet';
+    stylesheet.href = 'css/catalog-grid.css';
+    stylesheet.dataset.mvCatalogStyles = 'true';
+    document.head.appendChild(stylesheet);
+  }
+
+  function installCatalogBehavior() {
+    ensureCatalogStylesheet();
+    const grid = document.getElementById('productsGrid');
+    const controls = document.querySelector('.catalog__controls');
+    if (!grid || !controls) return;
+
+    function applyCatalogFilters() {
+      const searchInput = document.getElementById('catalogSearch');
+      const query = (searchInput ? searchInput.value : '').trim().toLocaleLowerCase('es');
+      let visible = 0;
+      grid.querySelectorAll('.product-card').forEach(card => {
+        const matches = !query || card.textContent.toLocaleLowerCase('es').includes(query);
+        card.hidden = !matches;
+        if (matches) visible += 1;
+      });
+      const count = document.getElementById('catalogCount');
+      if (count && query) count.textContent = visible + ' producto' + (visible === 1 ? '' : 's') +
+        ' encontrado' + (visible === 1 ? '' : 's');
+      const empty = document.getElementById('catalogEmpty');
+      if (empty && query) empty.style.display = visible ? 'none' : 'flex';
+    }
+
+    if (!document.getElementById('catalogSearch')) {
+      const search = document.createElement('input');
+      search.id = 'catalogSearch';
+      search.className = 'catalog__search';
+      search.type = 'search';
+      search.placeholder = 'Buscar productos…';
+      search.setAttribute('aria-label', 'Buscar productos en el catálogo');
+      controls.prepend(search);
+      search.addEventListener('input', applyCatalogFilters);
+    }
+
+    function decorateCards() {
+      const products = window.MV_PUBLIC_PRODUCTS || [];
+      grid.querySelectorAll('.product-card').forEach(card => {
+        const id = card.dataset.id || card.querySelector('[data-product-id]')?.dataset.productId;
+        const product = products.find(item => String(item.id) === String(id));
+        if (!product || product.available !== false) return;
+        const button = card.querySelector('.product-card__cart-btn');
+        if (button) {
+          button.disabled = true;
+          button.setAttribute('aria-disabled', 'true');
+          button.textContent = 'No disponible';
+          button.classList.add('is-unavailable');
+        }
+        if (!card.querySelector('.availability-badge')) {
+          const badge = document.createElement('span');
+          badge.className = 'availability-badge';
+          badge.textContent = Number(product.stock || 0) <= 0 ? 'Agotado' : 'No disponible';
+          card.querySelector('.product-card__image')?.appendChild(badge);
+        }
+      });
+      applyCatalogFilters();
+    }
+
+    new MutationObserver(decorateCards).observe(grid, { childList: true, subtree: true });
+    grid.addEventListener('click', event => {
+      if (event.target.closest('.product-card__cart-btn:disabled')) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    }, true);
   }
 
   async function loadCatalog() {
@@ -170,6 +246,7 @@
     }
 
     const data = await cachedLoad;
+    window.MV_PUBLIC_PRODUCTS = data.products || [];
     return copyForConsumer(data);
   }
 
@@ -179,4 +256,9 @@
   }
 
   window.MVStoreData = { load, invalidate };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', installCatalogBehavior, { once: true });
+  } else {
+    installCatalogBehavior();
+  }
 })();
