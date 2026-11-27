@@ -56,3 +56,46 @@ html[data-theme="dark"] .theme-toggle { margin-left:auto;border:1px solid #70534
 .theme-toggle>span:first-child{font-size:1.15rem;line-height:1}
 .login-page .theme-toggle{position:fixed;top:18px;right:18px;z-index:10;margin:0}
 .admin-page .topbar .theme-toggle{margin-left:auto}
+
+
+/* Login: branded circular sun/moon control, matching storefront */
+.login-page .theme-toggle {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:46px;
+  height:46px;
+  min-width:46px;
+  min-height:46px;
+  padding:0;
+  border:1px solid rgba(201,162,39,.8);
+  border-radius:50%;
+  background:#650006;
+  color:#f5d778;
+  box-shadow:0 4px 16px rgba(40,0,0,.18);
+}
+.login-page .theme-toggle:hover {
+  background:#85000a;
+  border-color:#e1bd52;
+  transform:translateY(-1px);
+}
+.login-page .theme-toggle .theme-toggle__icon {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  height:100%;
+  color:#f5d778;
+  font-family:Arial,sans-serif;
+  font-size:25px;
+  font-weight:400;
+  line-height:1;
+}
+html[data-theme="dark"] .login-page .theme-toggle {
+  background:#302020;
+  border-color:#c9a227;
+  color:#ffe08a;
+}
+html[data-theme="dark"] .login-page .theme-toggle .theme-toggle__icon {
+  color:#ffe08a;
+}
