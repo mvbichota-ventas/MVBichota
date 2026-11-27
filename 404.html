@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página no encontrada | MV Bichota</title>
+  <meta name="description" content="La página solicitada no existe. Regresa al inicio o visita el catálogo de MV Bichota.">
+  <meta name="robots" content="noindex, follow">
+  <link rel="canonical" href="https://mvbichota-ventas.github.io/MVBichota/">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .not-found { min-height: 100vh; display:grid; place-items:center; padding:32px 16px; text-align:center; }
+    .not-found__card { width:min(620px,100%); padding:clamp(28px,7vw,56px); border:1px solid rgba(26,26,26,.08); border-radius:20px; background:#fff; box-shadow:0 10px 35px rgba(0,0,0,.08); }
+    .not-found__code { margin:0; color:#8b0000; font-size:clamp(4rem,16vw,7rem); line-height:.9; }
+    .not-found__title { margin:18px 0 10px; }
+    .not-found__text { margin:0 0 24px; color:#5f5a57; }
+    .not-found__actions { display:flex; flex-wrap:wrap; justify-content:center; gap:12px; }
+  </style>
+</head>
+<body>
+  <main class="not-found">
+    <section class="not-found__card" aria-labelledby="not-found-title">
+      <p class="not-found__code" aria-hidden="true">404</p>
+      <h1 class="not-found__title" id="not-found-title">Página no encontrada</h1>
+      <p class="not-found__text">La dirección que ingresaste no está disponible o fue movida.</p>
+      <div class="not-found__actions">
+        <a class="btn btn-primary" href="index.html">Volver al inicio</a>
+        <a class="btn btn-outline" href="index.html#catalogo">Visitar la tienda</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

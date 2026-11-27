@@ -1,0 +1,278 @@
+/* =========================
+   MV BICHOTA - Mobile UI
+   ========================= */
+
+:root {
+    --mobile-bottom-nav-height: 68px;
+}
+
+@media (max-width: 768px) {
+    body {
+        padding-bottom: calc(var(--mobile-bottom-nav-height) + env(safe-area-inset-bottom) + 12px);
+    }
+
+    .mobile-bottom-nav {
+        display: block;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: calc(var(--mobile-bottom-nav-height) + env(safe-area-inset-bottom));
+        padding: 0 0 env(safe-area-inset-bottom);
+        background: var(--color-primary-dark);
+        border-top: 1px solid rgba(201, 162, 39, 0.32);
+        box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.18);
+        z-index: 998;
+    }
+
+    .mobile-bottom-nav__content {
+        height: var(--mobile-bottom-nav-height);
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        align-items: center;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .mobile-nav-item {
+        min-width: 0;
+        height: 68px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        color: #fff;
+        border-radius: 0;
+        position: relative;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .mobile-nav-item i,
+    .mobile-nav-item svg {
+        width: 21px;
+        height: 21px;
+        flex: 0 0 21px;
+    }
+
+    .mobile-nav-item span {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 0.68rem;
+        line-height: 1;
+        font-weight: 600;
+    }
+
+    .mobile-nav-item.active {
+        color: var(--color-accent);
+        background: rgba(201, 162, 39, 0.09);
+    }
+
+    .mobile-nav-item.active::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 25%;
+        width: 50%;
+        height: 2px;
+        border-radius: 0 0 2px 2px;
+        background: var(--color-accent);
+    }
+
+    .mobile-nav-item--combo {
+        color: #fff;
+    }
+
+    .back-to-top {
+        bottom: calc(var(--mobile-bottom-nav-height) + env(safe-area-inset-bottom) + 16px);
+        right: 12px;
+        width: 44px;
+        height: 44px;
+    }
+
+    .combo-fab {
+        position: fixed;
+        right: 12px;
+        bottom: calc(var(--mobile-bottom-nav-height) + env(safe-area-inset-bottom) + 72px);
+        width: 46px;
+        height: 46px;
+        min-width: 46px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 50%;
+        border: 1px solid rgba(201, 162, 39, 0.55);
+        z-index: 997;
+    }
+
+    .combo-fab__text {
+        display: none;
+    }
+
+    .combo-bar {
+        bottom: calc(var(--mobile-bottom-nav-height) + env(safe-area-inset-bottom) + 8px);
+    }
+
+    .combo-toast,
+    .mv-notification,
+    .notification {
+        bottom: calc(var(--mobile-bottom-nav-height) + env(safe-area-inset-bottom) + 18px) !important;
+        left: 12px !important;
+        right: 12px !important;
+        max-width: none;
+    }
+
+    .combo-panel,
+    .combo-selector,
+    .cart-sidebar {
+        max-height: 100dvh;
+    }
+
+    .combo-panel__container,
+    .combo-selector__container {
+        max-height: calc(100dvh - env(safe-area-inset-top));
+    }
+
+    .combo-panel__footer,
+    .combo-selector__footer {
+        padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    }
+
+    .cart-sidebar {
+        top: 0;
+        right: -100%;
+        width: 100%;
+        max-width: 430px;
+        height: 100dvh;
+        bottom: auto;
+        margin: 0;
+    }
+
+    .cart-sidebar.open {
+        right: 0;
+    }
+
+    .cart-sidebar__header {
+        flex: 0 0 auto;
+        padding-top: calc(12px + env(safe-area-inset-top));
+    }
+
+    .cart-items {
+        min-height: 0;
+        flex: 1 1 auto;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 12px;
+    }
+
+    .cart-summary {
+        flex: 0 0 auto;
+        max-height: 44dvh;
+        overflow-y: auto;
+        padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    }
+
+    .cart-summary__actions {
+        position: sticky;
+        bottom: 0;
+        z-index: 2;
+        background: var(--color-bg-alt);
+        padding-top: 8px;
+    }
+}
+
+@media (min-width: 769px) {
+    .mobile-bottom-nav {
+        display: none !important;
+    }
+
+    body {
+        padding-bottom: 0;
+    }
+}
+
+@media (max-width: 360px) {
+    .mobile-nav-item span {
+        font-size: 0.62rem;
+    }
+
+    .combo-fab {
+        bottom: calc(var(--mobile-bottom-nav-height) + env(safe-area-inset-bottom) + 64px);
+    }
+}
+
+.combo-confirm-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(26, 26, 26, 0.72);
+    opacity: 0;
+    visibility: hidden;
+    transition: 180ms ease;
+}
+
+.combo-confirm-modal.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.combo-confirm-modal__dialog {
+    width: min(420px, 100%);
+    background: #fff;
+    border: 1px solid rgba(201, 162, 39, 0.35);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+}
+
+.combo-confirm-modal__title {
+    color: var(--color-primary-dark);
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+}
+
+.combo-confirm-modal__message {
+    color: var(--color-text-light);
+    line-height: 1.55;
+    margin-bottom: 20px;
+}
+
+.combo-confirm-modal__actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.combo-confirm-modal__actions button {
+    min-height: 44px;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-weight: 700;
+}
+
+.combo-confirm-modal__cancel {
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    background: #fff;
+}
+
+.combo-confirm-modal__confirm {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+@media (max-width: 480px) {
+    .combo-confirm-modal__actions {
+        flex-direction: column-reverse;
+    }
+
+    .combo-confirm-modal__actions button {
+        width: 100%;
+    }
+}
