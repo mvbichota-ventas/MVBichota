@@ -130,7 +130,7 @@ class ComboBuilder {
         selector.innerHTML = `
             <div class="combo-selector__container">
                 <div class="combo-selector__header">
-                    <h3>🎁 Selecciona productos para tu combo</h3>
+                    <div class="combo-selector__header-main"><h3>🎁 Selecciona productos para tu combo</h3><a class="combo-selector__home" href="#inicio" id="comboSelectorHome">← Volver al inicio</a></div>
                     <button class="combo-selector__close" id="comboSelectorClose">
                         <i data-lucide="x"></i>
                     </button>
@@ -208,7 +208,7 @@ class ComboBuilder {
                          onerror="this.src='https://via.placeholder.com/80?text=Producto'">
                     <div class="combo-selector__product-info">
                         <h4>${product.name}</h4>
-                        <p class="combo-selector__product-price">$${product.price.toFixed(2)} / ${product.unit}</p>
+                        <p class="combo-selector__product-price">USD ${Number(product.price || 0).toFixed(2)} / ${product.unit}${product.priceCup != null ? `<span class=\"combo-price-cup\">CUP ${Number(product.priceCup).toFixed(2)}</span>` : ''}</p>
                     </div>
                     <div class="combo-selector__product-actions">
                         ${qty > 0 ? `
@@ -307,6 +307,7 @@ class ComboBuilder {
                 id: product.id,
                 name: product.name,
                 price: product.price,
+                priceCup: product.priceCup == null ? null : Number(product.priceCup),
                 unit: product.unit || 'unidad',
                 image: product.image || '',
                 quantity: 1
@@ -353,8 +354,8 @@ class ComboBuilder {
     clearCombo() {
         if (this.comboItems.length === 0) return;
         
-        if (!confirm('¿Quieres eliminar todos los productos del combo?')) return;
-        
+        // Vaciar el combo de inmediato; el estado se mantiene en localStorage
+        // hasta que el usuario confirme esta acción mediante el propio botón.
         this.comboItems = [];
         
         this.saveToStorage();
@@ -466,7 +467,7 @@ class ComboBuilder {
                      onerror="this.src='https://via.placeholder.com/60?text=Producto'">
                 <div class="combo-panel-item__info">
                     <h4 class="combo-panel-item__name">${item.name}</h4>
-                    <p class="combo-panel-item__price">$${item.price.toFixed(2)} / ${item.unit}</p>
+                    <p class="combo-panel-item__price">USD ${Number(item.price || 0).toFixed(2)} / ${item.unit}${item.priceCup != null ? `<span class=\"combo-price-cup\">CUP ${Number(item.priceCup).toFixed(2)}</span>` : ''}</p>
                     <p class="combo-panel-item__subtotal">Subtotal: $${subtotal.toFixed(2)}</p>
                 </div>
                 <div class="combo-panel-item__actions">
@@ -558,6 +559,10 @@ class ComboBuilder {
     // Event Listeners
     // ================================================
     setupEventListeners() {
+        // Selector home link closes the selector without clearing its saved items.
+        const selectorHome = document.getElementById('comboSelectorHome');
+        if (selectorHome) selectorHome.addEventListener('click', () => this.closeSelector());
+
         // Selector close button
         const selectorClose = document.getElementById('comboSelectorClose');
         if (selectorClose) {
@@ -575,6 +580,10 @@ class ComboBuilder {
             this.comboBarViewBtn.addEventListener('click', () => this.openPanel());
         }
         
+        // Panel home link closes the panel and preserves the saved combo.
+        const panelHome = document.getElementById('comboPanelHome');
+        if (panelHome) panelHome.addEventListener('click', () => this.closePanel());
+
         // Panel close button
         if (this.comboPanelClose) {
             this.comboPanelClose.addEventListener('click', () => this.closePanel());
