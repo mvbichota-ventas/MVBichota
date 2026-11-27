@@ -42,10 +42,16 @@ async function openCropper(input,urlInput,actions){
  if(blob.size>MAX){toast('La imagen debe pesar 8 MB o menos.',true);return}
  const modal=ensureModal(),img=$('[data-crop-image]',modal),ratio=$('[data-ratio]',modal),zoom=$('[data-zoom]',modal);
  cleanup();sourceFile=file||new File([blob],'banner-image.'+(blob.type==='image/png'?'png':blob.type==='image/webp'?'webp':'jpg'),{type:blob.type});
- sourceUrl=URL.createObjectURL(blob);img.src=sourceUrl;modal.showModal();
+ sourceUrl=URL.createObjectURL(blob);
  img.onload=()=>{
-  active=new Cropper(img,{viewMode:1,dragMode:'move',autoCropArea:.88,background:false, responsive:true,restore:false, guides:true,center:true,highlight:true, cropBoxMovable:true,cropBoxResizable:true,toggleDragModeOnDblclick:false,ready(){ratio.value='free';zoom.value='0'}});
+  requestAnimationFrame(()=>{
+   if(!modal.open)return;
+   try{active=new Cropper(img,{viewMode:1,dragMode:'move',autoCropArea:.88,background:false,responsive:true,restore:false,guides:true,center:true,highlight:true,cropBoxMovable:true,cropBoxResizable:true,toggleDragModeOnDblclick:false,ready(){ratio.value='free';zoom.value='0'}});}
+   catch(error){console.error('[MV Bichota] Could not initialize banner cropper',error);toast('No se pudo iniciar el recortador. Intenta seleccionar la imagen nuevamente.',true)}
+  });
  };
+ img.onerror=()=>{toast('No se pudo cargar la imagen seleccionada.',true)};
+ modal.showModal();img.src=sourceUrl;
  ratio.onchange=()=>{if(!active)return;const v=ratio.value;active.setAspectRatio(v==='free'?NaN:v==='original'?img.naturalWidth/img.naturalHeight:ratios[v])};
  zoom.oninput=()=>{if(active)active.zoomTo(1+Number(zoom.value)/100)};
  modal.querySelectorAll('[data-rotate]').forEach(b=>b.onclick=()=>active&&active.rotate(Number(b.dataset.rotate)));
