@@ -37,13 +37,52 @@ function renderGallery(){
  box.querySelectorAll('[data-replace]').forEach(b=>b.onclick=()=>{const idx=Number(b.dataset.replace),picker=document.createElement('input');picker.type='file';picker.accept='image/jpeg,image/png,image/webp';picker.onchange=()=>{const f=picker.files?.[0];if(!f)return;if(!ALLOWED.has(f.type)||f.size>MAX_FILE){toast('Imagen no válida o superior a 8 MB.',true);return}const old=visible[idx];if(old.file)URL.revokeObjectURL(old.url);old.file=f;old.url=URL.createObjectURL(f);selectedIndex=idx;renderGallery()};picker.click()});
  box.querySelectorAll('[data-crop]').forEach(b=>b.onclick=()=>cropImage(visible[Number(b.dataset.crop)]));
  box.querySelectorAll('.image-tile').forEach(tile=>{tile.ondragstart=()=>{dragged=Number(tile.dataset.index)};tile.ondragover=e=>{e.preventDefault();tile.classList.add('is-over')};tile.ondragleave=()=>tile.classList.remove('is-over');tile.ondrop=e=>{e.preventDefault();const to=Number(tile.dataset.index);tile.classList.remove('is-over');if(dragged<0||dragged===to)return;const [moved]=visible.splice(dragged,1);visible.splice(to,0,moved);items=visible;selectedIndex=to;dragged=-1;renderGallery()}});
-}function cropImage(item){const dialog=document.createElement('dialog');dialog.className='crop-dialog';dialog.innerHTML='<form method="dialog"><h3>Recortar fotografía</h3><canvas width="480" height="360"></canvas><label>Zoom <input type="range" min="1" max="3" step="0.05" value="1"></label><p class="muted">Arrastra la imagen para ajustar el encuadre.</p><div class="editor-actions"><button class="btn ghost" value="cancel">Cancelar</button><button class="btn primary" value="save">Aplicar recorte</button></div></form>';document.body.append(dialog);const canvas=dialog.querySelector('canvas'),ctx=canvas.getContext('2d'),img=new Image();let zoom=1,dx=0,dy=0,start=null;img.onload=draw;img.src=item.url;function draw(){const scale=Math.max(canvas.width/img.width,canvas.height/img.height)*zoom,w=img.width*scale,h=img.height*scale;ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,(canvas.width-w)/2+dx,(canvas.height-h)/2+dy,w,h)}dialog.querySelector('input').oninput=e=>{zoom=Number(e.target.value);draw()};canvas.onpointerdown=e=>{start={x:e.clientX-dx,y:e.clientY-dy};canvas.setPointerCapture(e.pointerId)};canvas.onpointermove=e=>{if(start){dx=e.clientX-start.x;dy=e.clientY-start.y;draw()}};canvas.onpointerup=()=>start=null;dialog.querySelector('form').onsubmit=e=>{if(e.submitter?.value!=='save')return;e.preventDefault();canvas.toBlob(blob=>{if(!blob)return;const file=new File([blob],'product-crop.jpg',{type:'image/jpeg'});if(item.file)URL.revokeObjectURL(item.url);item.file=file;item.url=URL.createObjectURL(file);dialog.close();renderGallery()},'image/jpeg',.9)};dialog.addEventListener('close',()=>dialog.remove(),{once:true});dialog.showModal()}
+}function cropImage(item){
+ const dialog=document.createElement('dialog');
+ dialog.className='crop-dialog';
+ dialog.innerHTML='<div class="crop-dialog-content"><h3>Recortar fotografía</h3><canvas width="480" height="360" aria-label="Vista previa del recorte"></canvas><label>Zoom <input type="range" min="1" max="3" step="0.05" value="1"></label><p class="muted">Arrastra la imagen para ajustar el encuadre.</p><div class="editor-actions"><button type="button" class="btn ghost" data-crop-cancel>Cancelar</button><button type="button" class="btn primary" data-crop-apply>Aplicar recorte</button></div></div>';
+ document.body.append(dialog);
+ const canvas=dialog.querySelector('canvas'),ctx=canvas.getContext('2d'),img=new Image(),zoomControl=dialog.querySelector('input[type="range"]'),cancel=dialog.querySelector('[data-crop-cancel]'),apply=dialog.querySelector('[data-crop-apply]');
+ let zoom=1,dx=0,dy=0,start=null,closed=false;
+ function draw(){
+  if(!img.naturalWidth||!img.naturalHeight)return;
+  const scale=Math.max(canvas.width/img.naturalWidth,canvas.height/img.naturalHeight)*zoom,w=img.naturalWidth*scale,h=img.naturalHeight*scale;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.drawImage(img,(canvas.width-w)/2+dx,(canvas.height-h)/2+dy,w,h);
+ }
+ function close(){if(closed)return;closed=true;if(dialog.open)dialog.close();dialog.remove()}
+ img.onload=draw;
+ img.onerror=()=>{toast('No se pudo cargar la fotografía para recortarla.',true);close()};
+ img.src=item.url;
+ zoomControl.addEventListener('input',e=>{zoom=Number(e.target.value);draw()});
+ canvas.addEventListener('pointerdown',e=>{start={x:e.clientX-dx,y:e.clientY-dy};canvas.setPointerCapture(e.pointerId)});
+ canvas.addEventListener('pointermove',e=>{if(!start)return;dx=e.clientX-start.x;dy=e.clientY-start.y;draw()});
+ const stopDrag=()=>{start=null};
+ canvas.addEventListener('pointerup',stopDrag);
+ canvas.addEventListener('pointercancel',stopDrag);
+ cancel.addEventListener('click',e=>{e.preventDefault();close()});
+ apply.addEventListener('click',e=>{
+  e.preventDefault();
+  if(!img.complete||!img.naturalWidth){toast('Espera a que termine de cargar la fotografía.',true);return}
+  apply.disabled=true;apply.textContent='Aplicando…';
+  canvas.toBlob(blob=>{
+   if(!blob){apply.disabled=false;apply.textContent='Aplicar recorte';toast('No se pudo generar el recorte.',true);return}
+   const file=new File([blob],'product-crop.jpg',{type:'image/jpeg'});
+   if(item.file&&item.url.startsWith('blob:'))URL.revokeObjectURL(item.url);
+   item.file=file;item.url=URL.createObjectURL(file);
+   renderGallery();close();
+  },'image/jpeg',.92);
+ });
+ dialog.addEventListener('cancel',e=>{e.preventDefault();close()});
+ dialog.addEventListener('click',e=>{if(e.target===dialog)close()});
+ dialog.showModal();
+}
 function progress(value){const bar=$('#imageProgress');if(bar){bar.hidden=false;bar.firstElementChild.style.width=value+'%'}}
 async function upload(item,productId,index){if(!item.file)return item.url;const ext=item.file.type==='image/png'?'png':item.file.type==='image/webp'?'webp':'jpg',path=`${productId}/${crypto.randomUUID()}-${index}.${ext}`,{error}=await sb.storage.from(BUCKET).upload(path,item.file,{contentType:item.file.type,cacheControl:'3600',upsert:false});if(error)throw error;return sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl}
 async function save(e){e.preventDefault();const form=e.target;if(form.dataset.saving==='1')return;form.dataset.saving='1';const submit=form.querySelector('[type=submit]');submit.disabled=true;let productId=editing?.id;try{const fd=new FormData(form),v=n=>fd.get(n),checked=n=>form.elements[n].checked,name=String(v('name')||'').trim(),price=Number(v('price'));if(!name||!Number.isFinite(price)||price<0)throw Error('Indica un nombre y un precio válido.');const sale=v('sale_price')===''?null:Number(v('sale_price'));if(sale!==null&&(!Number.isFinite(sale)||sale<0))throw Error('El precio promocional no es válido.');const slug=editing?.slug||await uniqueSlug(name,productId);const cupValue=v('price_cup')===''?null:Number(v('price_cup'));if(cupPriceSupported&&cupValue!==null&&(!Number.isFinite(cupValue)||cupValue<0))throw Error('El precio CUP debe ser un número válido.');const base={name,slug,description:String(v('description')||''),price,sale_price:sale,...(cupPriceSupported?{price_cup:cupValue}:{}),unit:v('unit')||'unidad',stock:Math.max(0,Number(v('stock')||0)),category_id:v('category_id')||null,active:checked('active'),is_available:checked('is_available'),featured:checked('featured'),allow_in_combo:checked('allow_in_combo'),sort_order:Number(v('sort_order')||0),featured_order:Number(v('featured_order')||0)};
  if(productId){const {error}=await sb.from('products').update(base).eq('id',productId);if(error)throw error}else{const {data,error}=await sb.from('products').insert(base).select('id').single();if(error)throw error;productId=data.id}const kept=items.filter(x=>!x.removed),urls=[];for(let i=0;i<kept.length;i++){progress(Math.round(i/Math.max(1,kept.length)*100));urls.push(await upload(kept[i],productId,i))}const {error}=await sb.from('products').update({image_url:urls[0]||null,images:urls}).eq('id',productId);if(error)throw error;progress(100);$('#editor').close();toast(editing?'Producto actualizado.':'Producto creado.');if(typeof window.MV_ADMIN_REFRESH==='function')await window.MV_ADMIN_REFRESH();}catch(err){console.error('[MV Bichota] Product save failed',{message:err?.message,code:err?.code,details:err?.details,hint:err?.hint,error:err});toast(describeError(err),true)}finally{form.dataset.saving='';submit.disabled=false;const bar=$('#imageProgress');if(bar)bar.hidden=true}}
 document.addEventListener('DOMContentLoaded',()=>{if(!window.supabase||!window.MV_SUPABASE_URL||!window.MV_SUPABASE_KEY)return;try{sb=window.MV_SUPABASE_CLIENT||(typeof window.MV_getSupabaseClient==='function'?window.MV_getSupabaseClient():null)}catch(error){console.error(error)}if(!sb){console.error('[MV Bichota] Supabase client was not initialized');toast('No se pudo inicializar la conexión compartida con Supabase.',true);return;}const view=$('#view'),form=$('#editorForm');if(!view||!form)return;
  view.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;const title=$('#viewTitle')?.textContent,isNew=b.id==='addNew'&&title==='Productos',isEdit=b.dataset.edit==='product';if(!isNew&&!isEdit)return;e.preventDefault();e.stopImmediatePropagation();try{let product=null;if(isEdit){const {data,error}=await sb.from('products').select('*').eq('id',b.dataset.id).single();if(error)throw error;product=data}await openProduct(product)}catch(err){console.error('[MV Bichota] Could not open product editor',err);toast(err.message||'No se pudo abrir el producto.',true)}},true);
- document.addEventListener('submit',e=>{if($('#editor')?.dataset.type!=='product')return;e.preventDefault();e.stopImmediatePropagation();save(e)},true);
+ document.addEventListener('submit',e=>{if(e.target!==$('#editorForm')||$('#editor')?.dataset.type!=='product')return;e.preventDefault();e.stopImmediatePropagation();save(e)},true);
 });
 })();
