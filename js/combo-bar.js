@@ -112,7 +112,7 @@ class ComboBuilder {
         fab.id = 'comboFab';
         fab.setAttribute('aria-label', 'Arma tu combo');
         fab.innerHTML = `
-            <i data-lucide="gift"></i>
+            <img class="combo-brand-icon" src="assets/images/mv-bichota-icon.webp" alt="">
             <span class="combo-fab__text">Arma tu combo</span>
         `;
         document.body.appendChild(fab);
@@ -130,7 +130,7 @@ class ComboBuilder {
         selector.innerHTML = `
             <div class="combo-selector__container">
                 <div class="combo-selector__header">
-                    <div class="combo-selector__header-main"><h3>🎁 Selecciona productos para tu combo</h3><a class="combo-selector__home" href="#inicio" id="comboSelectorHome">← Volver al inicio</a></div>
+                    <div class="combo-selector__header-main"><h3><img class="combo-brand-icon" src="assets/images/mv-bichota-icon.webp" alt=""> Selecciona productos para tu combo</h3><a class="combo-selector__home" href="#inicio" id="comboSelectorHome">← Volver al inicio</a></div>
                     <button class="combo-selector__close" id="comboSelectorClose">
                         <i data-lucide="x"></i>
                     </button>
@@ -539,19 +539,20 @@ class ComboBuilder {
             total: total
         };
         
-        if (window.mvCart) {
-            window.mvCart.addCombo(combo);
+        const cart = window.mvCart;
+        if (!cart || typeof cart.addCombo !== 'function' || typeof cart.openCart !== 'function') {
+            this.showToast('El carrito todavía no está disponible. Inténtalo nuevamente.', 'error');
+            return;
         }
-        
-        // Clear combo
+
+        this.closePanel();
+        cart.addCombo(combo);
         this.comboItems = [];
-        
         this.saveToStorage();
         this.renderSelectorProducts();
         this.renderComboBar();
         this.renderComboPanel();
-        this.closePanel();
-        
+        window.requestAnimationFrame(() => cart.openCart());
         this.showToast('¡Combo agregado al carrito!', 'success');
     }
 
