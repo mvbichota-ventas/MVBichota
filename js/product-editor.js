@@ -39,58 +39,108 @@ function renderGallery(){
  box.querySelectorAll('.image-tile').forEach(tile=>{tile.ondragstart=()=>{dragged=Number(tile.dataset.index)};tile.ondragover=e=>{e.preventDefault();tile.classList.add('is-over')};tile.ondragleave=()=>tile.classList.remove('is-over');tile.ondrop=e=>{e.preventDefault();const to=Number(tile.dataset.index);tile.classList.remove('is-over');if(dragged<0||dragged===to)return;const [moved]=visible.splice(dragged,1);visible.splice(to,0,moved);items=visible;selectedIndex=to;dragged=-1;renderGallery()}});
 }function cropImage(item){
  const dialog=document.createElement('dialog');
- dialog.className='crop-dialog';
- dialog.innerHTML='<div class="crop-dialog-content"><h3>Recortar fotografía</h3><canvas width="480" height="360" aria-label="Vista previa del recorte"></canvas><label>Zoom <input type="range" min="1" max="3" step="0.05" value="1"></label><p class="muted">Arrastra la imagen para ajustar el encuadre.</p><div class="editor-actions"><button type="button" class="btn ghost" data-crop-cancel>Cancelar</button><button type="button" class="btn primary" data-crop-apply>Aplicar recorte</button></div></div>';
+ dialog.className='crop-dialog crop-dialog-pro';
+ dialog.innerHTML='<div class="crop-dialog-content"><div class="crop-heading"><div><h3>Recortar fotografía</h3><p>Selecciona el área que quieres conservar. Puedes moverla y cambiar su tamaño.</p></div><span class="crop-dimensions" data-crop-dimensions>—</span></div><div class="crop-stage"><canvas width="800" height="600" aria-label="Área interactiva para recortar la fotografía"></canvas><div class="crop-loading" data-crop-loading>Cargando fotografía…</div></div><div class="crop-toolbar"><label class="crop-ratio-label">Proporción <select data-crop-ratio><option value="free">Libre (cualquier dimensión)</option><option value="original">Original de la foto</option><option value="1:1">Cuadrado 1:1</option><option value="4:3">Horizontal 4:3</option><option value="3:4">Vertical 3:4</option><option value="16:9">Panorámica 16:9</option><option value="9:16">Vertical 9:16</option><option value="3:2">Horizontal 3:2</option><option value="2:3">Vertical 2:3</option></select></label><label class="crop-zoom-label">Tamaño del recorte <input data-crop-size type="range" min="20" max="100" value="82"></label></div><p class="crop-help">Arrastra dentro del marco para moverlo. Arrastra los bordes o las esquinas para cambiar el tamaño. En modo Libre puedes elegir cualquier proporción.</p><div class="editor-actions"><button type="button" class="btn ghost" data-crop-cancel>Cancelar</button><button type="button" class="btn primary" data-crop-apply>Aplicar recorte</button></div></div>';
  document.body.append(dialog);
- const canvas=dialog.querySelector('canvas'),ctx=canvas.getContext('2d'),img=new Image(),zoomControl=dialog.querySelector('input[type="range"]'),cancel=dialog.querySelector('[data-crop-cancel]'),apply=dialog.querySelector('[data-crop-apply]');
- let zoom=1,dx=0,dy=0,start=null,closed=false;
+ const canvas=dialog.querySelector('canvas'),ctx=canvas.getContext('2d'),img=new Image(),ratioSelect=dialog.querySelector('[data-crop-ratio]'),sizeControl=dialog.querySelector('[data-crop-size]'),cancel=dialog.querySelector('[data-crop-cancel]'),apply=dialog.querySelector('[data-crop-apply]'),loading=dialog.querySelector('[data-crop-loading]'),dimensions=dialog.querySelector('[data-crop-dimensions]');
+ const W=canvas.width,H=canvas.height,MIN=28;
+ let closed=false,drag=null,ratio='free',imageRect={x:0,y:0,w:W,h:H},crop={x:0,y:0,w:0,h:0};
+ function ratioValue(value){
+  if(value==='free')return null;
+  if(value==='original')return img.naturalWidth/img.naturalHeight;
+  const parts=value.split(':').map(Number);return parts[0]/parts[1];
+ }
+ function clampCrop(){
+  crop.w=Math.max(MIN,Math.min(crop.w,imageRect.w));crop.h=Math.max(MIN,Math.min(crop.h,imageRect.h));
+  crop.x=Math.max(imageRect.x,Math.min(crop.x,imageRect.x+imageRect.w-crop.w));
+  crop.y=Math.max(imageRect.y,Math.min(crop.y,imageRect.y+imageRect.h-crop.h));
+ }
+ function initialCrop(){
+  const r=ratioValue(ratio);let w=imageRect.w*.82,h=imageRect.h*.82;
+  if(r){if(w/h>r)w=h*r;else h=w/r}
+  crop={x:imageRect.x+(imageRect.w-w)/2,y:imageRect.y+(imageRect.h-h)/2,w,h};clampCrop();
+ }
+ function fitImage(){
+  const scale=Math.min(W/img.naturalWidth,H/img.naturalHeight);
+  const w=img.naturalWidth*scale,h=img.naturalHeight*scale;
+  imageRect={x:(W-w)/2,y:(H-h)/2,w,h};
+ }
+ function handles(){
+  const {x,y,w,h}=crop,m=9;
+  return [{id:'nw',x,y},{id:'n',x:x+w/2,y},{id:'ne',x:x+w,y},{id:'e',x:x+w,y:y+h/2},{id:'se',x:x+w,y:y+h},{id:'s',x:x+w/2,y:y+h},{id:'sw',x,y:y+h},{id:'w',x,y:y+h/2}].map(p=>({...p,r:m}));
+ }
  function draw(){
   if(!img.naturalWidth||!img.naturalHeight)return;
-  const scale=Math.max(canvas.width/img.naturalWidth,canvas.height/img.naturalHeight)*zoom,w=img.naturalWidth*scale,h=img.naturalHeight*scale;
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.drawImage(img,(canvas.width-w)/2+dx,(canvas.height-h)/2+dy,w,h);
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#171317';ctx.fillRect(0,0,W,H);
+  ctx.drawImage(img,imageRect.x,imageRect.y,imageRect.w,imageRect.h);
+  ctx.save();ctx.fillStyle='rgba(10,8,12,.62)';ctx.beginPath();ctx.rect(0,0,W,H);ctx.rect(crop.x,crop.y,crop.w,crop.h);ctx.fill('evenodd');ctx.restore();
+  ctx.save();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.setLineDash([]);ctx.strokeRect(crop.x,crop.y,crop.w,crop.h);
+  ctx.strokeStyle='rgba(255,255,255,.55)';ctx.lineWidth=1;ctx.beginPath();
+  for(let i=1;i<3;i++){ctx.moveTo(crop.x+crop.w*i/3,crop.y);ctx.lineTo(crop.x+crop.w*i/3,crop.y+crop.h);ctx.moveTo(crop.x,crop.y+crop.h*i/3);ctx.lineTo(crop.x+crop.w,crop.y+crop.h*i/3)}
+  ctx.stroke();
+  handles().forEach(p=>{ctx.beginPath();ctx.fillStyle='#fff';ctx.strokeStyle='#7b2737';ctx.lineWidth=2;ctx.roundRect(p.x-6,p.y-6,12,12,3);ctx.fill();ctx.stroke()});
+  ctx.restore();
+  const sx=img.naturalWidth/imageRect.w,sy=img.naturalHeight/imageRect.h;
+  dimensions.textContent=Math.round(crop.w*sx)+' × '+Math.round(crop.h*sy)+' px';
  }
  function close(){if(closed)return;closed=true;if(dialog.open)dialog.close();dialog.remove()}
- img.onload=draw;
- img.onerror=()=>{toast('No se pudo cargar la fotografía para recortarla. Intenta reemplazarla o subirla nuevamente.',true);close()};
- // Remote product images must opt into CORS before assigning src so the canvas can export the crop.
+ function point(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}}
+ function hit(p){
+  for(const h of handles()){if(Math.abs(p.x-h.x)<15&&Math.abs(p.y-h.y)<15)return h.id}
+  if(p.x>=crop.x&&p.x<=crop.x+crop.w&&p.y>=crop.y&&p.y<=crop.y+crop.h)return 'move';
+  return null;
+ }
+ function resizeCrop(which,p){
+  const old={...drag.crop},dx=p.x-drag.start.x,dy=p.y-drag.start.y;
+  if(which==='move'){crop.x=Math.max(imageRect.x,Math.min(imageRect.x+imageRect.w-crop.w,old.x+dx));crop.y=Math.max(imageRect.y,Math.min(imageRect.y+imageRect.h-crop.h,old.y+dy));return}
+  let left=old.x,top=old.y,right=old.x+old.w,bottom=old.y+old.h;
+  if(which.includes('w'))left=Math.max(imageRect.x,Math.min(right-MIN,old.x+dx));
+  if(which.includes('e'))right=Math.min(imageRect.x+imageRect.w,Math.max(left+MIN,old.x+old.w+dx));
+  if(which.includes('n'))top=Math.max(imageRect.y,Math.min(bottom-MIN,old.y+dy));
+  if(which.includes('s'))bottom=Math.min(imageRect.y+imageRect.h,Math.max(top+MIN,old.y+old.h+dy));
+  const r=ratioValue(ratio);
+  if(r){
+   let w=right-left,h=bottom-top;
+   if(which==='n'||which==='s')w=h*r;
+   else if(which==='e'||which==='w')h=w/r;
+   else if(w/h>r)h=w/r;else w=h*r;
+   if(w>imageRect.x+imageRect.w-left){w=imageRect.x+imageRect.w-left;h=w/r}
+   if(h>imageRect.y+imageRect.h-top){h=imageRect.y+imageRect.h-top;w=h*r}
+   if(which.includes('w'))left=right-w;else right=left+w;
+   if(which.includes('n'))top=bottom-h;else bottom=top+h;
+   left=Math.max(imageRect.x,left);top=Math.max(imageRect.y,top);
+  }
+  crop={x:left,y:top,w:right-left,h:bottom-top};clampCrop();
+ }
+ img.onload=()=>{loading.hidden=true;fitImage();initialCrop();draw()};
+ img.onerror=()=>{toast('No se pudo cargar la fotografía para recortarla.',true);close()};
  if(!item.url.startsWith('blob:')&&!item.url.startsWith('data:'))img.crossOrigin='anonymous';
  img.src=item.url;
- zoomControl.addEventListener('input',e=>{zoom=Number(e.target.value);draw()});
- canvas.addEventListener('pointerdown',e=>{start={x:e.clientX-dx,y:e.clientY-dy};canvas.setPointerCapture(e.pointerId)});
- canvas.addEventListener('pointermove',e=>{if(!start)return;dx=e.clientX-start.x;dy=e.clientY-start.y;draw()});
- const stopDrag=()=>{start=null};
- canvas.addEventListener('pointerup',stopDrag);
- canvas.addEventListener('pointercancel',stopDrag);
+ canvas.addEventListener('pointerdown',e=>{if(!img.naturalWidth)return;const p=point(e),which=hit(p);if(!which)return;drag={which,start:p,crop:{...crop}};canvas.setPointerCapture(e.pointerId)});
+ canvas.addEventListener('pointermove',e=>{if(!drag){const p=point(e),h=hit(p);canvas.style.cursor=h==='move'?'move':h?({nw:'nwse-resize',se:'nwse-resize',ne:'nesw-resize',sw:'nesw-resize',n:'ns-resize',s:'ns-resize',e:'ew-resize',w:'ew-resize'}[h]):'crosshair';return}resizeCrop(drag.which,point(e));draw()});
+ const stop=()=>{drag=null};canvas.addEventListener('pointerup',stop);canvas.addEventListener('pointercancel',stop);
+ ratioSelect.addEventListener('change',()=>{ratio=ratioSelect.value;initialCrop();draw()});
+ sizeControl.addEventListener('input',()=>{const oldCenter={x:crop.x+crop.w/2,y:crop.y+crop.h/2};const r=ratioValue(ratio),factor=Number(sizeControl.value)/82;let w=imageRect.w*.82*factor,h=imageRect.h*.82*factor;if(r){if(w/h>r)w=h*r;else h=w/r}crop={x:oldCenter.x-w/2,y:oldCenter.y-h/2,w,h};clampCrop();draw()});
  cancel.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();close()});
  apply.addEventListener('click',async e=>{
-  e.preventDefault();e.stopPropagation();
-  if(apply.disabled)return;
+  e.preventDefault();e.stopPropagation();if(apply.disabled)return;
   if(!img.complete||!img.naturalWidth){toast('Espera a que termine de cargar la fotografía.',true);return}
   apply.disabled=true;apply.textContent='Aplicando…';
   try{
-   // Export in a promise so synchronous canvas security errors cannot leave the button stuck.
-   const blob=await new Promise((resolve,reject)=>{
-    try{canvas.toBlob(result=>result?resolve(result):reject(new Error('El navegador no pudo generar la imagen recortada. Comprueba que la fotografía permita edición y vuelve a intentarlo.')),'image/jpeg',.92)}
-    catch(error){reject(error)}
-   });
-   const file=new File([blob],'product-crop.jpg',{type:'image/jpeg'});
-   const nextUrl=URL.createObjectURL(file);
+   const scaleX=img.naturalWidth/imageRect.w,scaleY=img.naturalHeight/imageRect.h;
+   const sx=Math.max(0,Math.round((crop.x-imageRect.x)*scaleX)),sy=Math.max(0,Math.round((crop.y-imageRect.y)*scaleY));
+   const sw=Math.min(img.naturalWidth-sx,Math.round(crop.w*scaleX)),sh=Math.min(img.naturalHeight-sy,Math.round(crop.h*scaleY));
+   if(sw<1||sh<1)throw new Error('El área seleccionada es demasiado pequeña.');
+   const out=document.createElement('canvas');out.width=sw;out.height=sh;
+   const outCtx=out.getContext('2d');outCtx.drawImage(img,sx,sy,sw,sh,0,0,sw,sh);
+   const blob=await new Promise((resolve,reject)=>{try{out.toBlob(b=>b?resolve(b):reject(new Error('No se pudo generar el recorte.')),'image/jpeg',.94)}catch(error){reject(error)}});
+   const file=new File([blob],'product-crop.jpg',{type:'image/jpeg'}),url=URL.createObjectURL(file);
    if(item.file&&item.url.startsWith('blob:'))URL.revokeObjectURL(item.url);
-   item.file=file;item.url=nextUrl;
-   renderGallery();close();
-   toast('Recorte aplicado. Guarda los cambios del producto para conservarlo.');
-  }catch(error){
-   console.error('[MV Bichota] Image crop failed',error);
-   const reason=error?.name==='SecurityError'?'El navegador bloqueó la edición de esta imagen por seguridad. Vuelve a subir la fotografía y prueba otra vez.':(error?.message||'No se pudo aplicar el recorte.');
-   toast(reason,true);
-  }finally{
-   if(!closed){apply.disabled=false;apply.textContent='Aplicar recorte'}
-  }
+   item.file=file;item.url=url;renderGallery();close();toast('Recorte aplicado. Guarda los cambios del producto para conservarlo.');
+  }catch(error){console.error('[MV Bichota] Crop failed',error);toast(error?.name==='SecurityError'?'No se pudo editar esta imagen por restricciones de origen. Vuelve a subirla e inténtalo otra vez.':(error?.message||'No se pudo aplicar el recorte.'),true)}
+  finally{if(!closed){apply.disabled=false;apply.textContent='Aplicar recorte'}}
  });
- dialog.addEventListener('cancel',e=>{e.preventDefault();close()});
- dialog.addEventListener('click',e=>{if(e.target===dialog)close()});
- dialog.showModal();
+ dialog.addEventListener('cancel',e=>{e.preventDefault();close()});dialog.addEventListener('click',e=>{if(e.target===dialog)close()});dialog.showModal();
 }
 function progress(value){const bar=$('#imageProgress');if(bar){bar.hidden=false;bar.firstElementChild.style.width=value+'%'}}
 async function upload(item,productId,index){if(!item.file)return item.url;const ext=item.file.type==='image/png'?'png':item.file.type==='image/webp'?'webp':'jpg',path=`${productId}/${crypto.randomUUID()}-${index}.${ext}`,{error}=await sb.storage.from(BUCKET).upload(path,item.file,{contentType:item.file.type,cacheControl:'3600',upsert:false});if(error)throw error;return sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl}
