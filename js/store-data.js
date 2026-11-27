@@ -157,16 +157,29 @@
         window.MV_SUPABASE_KEY,
         { auth: { persistSession: false, autoRefreshToken: false } }
       );
-      const [productResult, categoryResult] = await Promise.all([
+      // Request only storefront fields; avoid fetching every column and a nested relation.
+      // A bounded wait prevents a slow Supabase response from leaving the storefront loading forever.
+      let timeoutId;
+      const remoteRequest = Promise.all([
         client.from('products')
-          .select('*, categories(slug,name)')
+          .select('id,legacy_id,slug,name,description,price,sale_price,unit,category_id,image_url,images,stock,is_available,active,featured,sort_order,allow_in_combo,combo_order,featured_order')
           .eq('active', true)
           .order('sort_order'),
         client.from('categories')
-          .select('*')
+          .select('id,name,slug,description,image_url,active,allow_in_combo,sort_order,icon')
           .eq('active', true)
           .order('sort_order')
       ]);
+      const timeout = new Promise((_, reject) => {
+        timeoutId = setTimeout(() => reject(new Error('Supabase tardó demasiado; se muestra el catálogo de respaldo')), 6000);
+      });
+      let results;
+      try {
+        results = await Promise.race([remoteRequest, timeout]);
+      } finally {
+        clearTimeout(timeoutId);
+      }
+      const [productResult, categoryResult] = results;
 
       if (productResult.error) throw productResult.error;
       if (categoryResult.error) throw categoryResult.error;
