@@ -10,7 +10,7 @@ class ProductCarousel {
         this.currentIndex = 0;
         this.itemsPerView = 4;
         this.autoplayInterval = null;
-        this.autoplayDelay = 4000;
+        this.autoplayDelay = 3000;
         this.touchStartX = 0;
         this.touchEndX = 0;
         this.isDragging = false;
