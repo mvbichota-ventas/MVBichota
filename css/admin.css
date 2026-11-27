@@ -229,3 +229,23 @@ html[data-theme="dark"] .crop-dialog-pro .crop-toolbar select{background:#302528
  .crop-dialog-pro .editor-actions{display:grid;grid-template-columns:1fr 1fr}
  .crop-dialog-pro .editor-actions .btn{width:100%}
 }
+
+/* Banner image crop editor */
+.banner-crop-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:-5px 0 14px}
+.banner-crop-actions .hint{margin:0}
+.banner-crop-modal{border:0;border-radius:18px;padding:24px;width:min(900px,calc(100% - 24px));max-height:92vh;overflow:auto;box-shadow:0 25px 90px #160d1d66}
+.banner-crop-modal::backdrop{background:#211629b8;backdrop-filter:blur(4px)}
+.banner-crop-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:18px}
+.banner-crop-head h2{font:700 24px 'Playfair Display',serif;margin:0 0 5px}
+.banner-crop-head p{font-size:13px;color:var(--muted);margin:0}
+.banner-crop-stage{height:min(54vh,520px);min-height:260px;background:#211d24;border-radius:12px;overflow:hidden}
+.banner-crop-stage img{display:block;max-width:100%;max-height:100%;opacity:0}
+.banner-crop-stage .cropper-container{max-width:100%}
+.banner-crop-stage .cropper-view-box,.banner-crop-stage .cropper-line,.banner-crop-stage .cropper-point{outline-color:#fff}
+.banner-crop-tools{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.banner-crop-tools label{display:grid;gap:7px;font-size:12px;font-weight:700}
+.banner-crop-tools select{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;background:#fff}
+.banner-crop-tools input[type=range]{width:100%;accent-color:var(--plum)}
+.banner-crop-rotate{display:flex;gap:7px;flex-wrap:wrap;align-items:end}
+.banner-crop-modal>.hint{margin:0 0 12px}
+@media(max-width:600px){.banner-crop-modal{padding:16px}.banner-crop-stage{height:42vh;min-height:220px}.banner-crop-tools{grid-template-columns:1fr}.banner-crop-head h2{font-size:20px}.banner-crop-rotate .btn{flex:1}}
