@@ -218,3 +218,67 @@
 @media (prefers-reduced-motion: reduce) {
   .products__grid > .product-card { transition: none; }
 }
+
+
+/* MV Bichota premium layout correction: prevent horizontal overflow */
+.catalog,
+#catalogo {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+#catalogo > .container,
+.catalog > .container {
+  box-sizing: border-box !important;
+  width: min(100%, 1440px) !important;
+  max-width: 100% !important;
+  margin-inline: auto !important;
+  padding-inline: clamp(12px, 2vw, 24px) !important;
+}
+#catalogo .products__grid,
+.products__grid {
+  box-sizing: border-box !important;
+  display: grid !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: clamp(12px, 1.5vw, 22px) !important;
+}
+#catalogo .products__grid > .product-card,
+.products__grid > .product-card {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+@media (min-width: 1600px) {
+  #catalogo .products__grid,
+  .products__grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  }
+}
+@media (max-width: 1100px) {
+  #catalogo .products__grid,
+  .products__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+@media (max-width: 700px) {
+  #catalogo > .container,
+  .catalog > .container {
+    width: 100% !important;
+    padding-inline: 12px !important;
+  }
+  #catalogo .products__grid,
+  .products__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+  }
+}
+@media (max-width: 360px) {
+  #catalogo .products__grid,
+  .products__grid {
+    gap: 8px !important;
+  }
+}
