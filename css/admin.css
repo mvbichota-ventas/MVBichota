@@ -194,3 +194,38 @@ html[data-theme="dark"] .crop-dialog{background:#211a1a;color:#f2eaea}
  .editor form{padding:12px}
  .product-editor-grid{max-height:68vh!important}
 }
+
+
+/* Interactive freeform image cropper */
+.crop-dialog-pro{width:min(820px,96vw);max-width:820px;padding:22px;background:#fff;color:#292331}
+.crop-dialog-pro .crop-dialog-content{display:grid;gap:12px}
+.crop-dialog-pro .crop-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.crop-dialog-pro .crop-heading h3{margin:0 0 5px;font-size:21px}
+.crop-dialog-pro .crop-heading p{margin:0;color:#77717d;font-size:13px;line-height:1.4}
+.crop-dialog-pro .crop-dimensions{flex:0 0 auto;background:#f4edf1;color:#6e344f;border-radius:9px;padding:8px 10px;font-size:12px;font-weight:800}
+.crop-dialog-pro .crop-stage{position:relative;display:grid;place-items:center;overflow:auto;max-height:58vh;min-height:210px;border-radius:12px;background:#171317}
+.crop-dialog-pro .crop-stage canvas{display:block;width:min(100%,calc(58vh * 1.3333));height:auto;max-height:none;object-fit:contain;touch-action:none;cursor:crosshair}
+.crop-dialog-pro .crop-loading{position:absolute;inset:0;display:grid;place-items:center;color:#fff;background:#171317}
+.crop-dialog-pro .crop-loading[hidden]{display:none}
+.crop-dialog-pro .crop-toolbar{display:grid;grid-template-columns:minmax(180px,1fr) minmax(180px,1fr);gap:16px;align-items:end}
+.crop-dialog-pro .crop-toolbar label{display:grid;gap:7px;margin:0;color:#514957;font-size:13px;font-weight:700}
+.crop-dialog-pro .crop-toolbar select{width:100%;min-height:40px;padding:8px 10px;border:1px solid #ddd3dc;border-radius:9px;background:#fff;color:#292331}
+.crop-dialog-pro .crop-toolbar input{width:100%;accent-color:#7b3f70}
+.crop-dialog-pro .crop-help{margin:0;color:#77717d;font-size:12px;line-height:1.45}
+.crop-dialog-pro .editor-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:4px}
+.crop-dialog-pro button:disabled{opacity:.65;cursor:wait}
+html[data-theme="dark"] .crop-dialog-pro{background:#211a1a;color:#f5eeee}
+html[data-theme="dark"] .crop-dialog-pro .crop-heading p,
+html[data-theme="dark"] .crop-dialog-pro .crop-help{color:#c0afb8}
+html[data-theme="dark"] .crop-dialog-pro .crop-dimensions{background:#3a2832;color:#f3d9e4}
+html[data-theme="dark"] .crop-dialog-pro .crop-toolbar label{color:#f1e4e9}
+html[data-theme="dark"] .crop-dialog-pro .crop-toolbar select{background:#302528;color:#fff;border-color:#59434c}
+@media(max-width:600px){
+ .crop-dialog-pro{width:calc(100vw - 18px);max-width:none;padding:14px}
+ .crop-dialog-pro .crop-stage{max-height:43vh;min-height:170px}
+ .crop-dialog-pro .crop-stage canvas{width:min(100%,calc(43vh * 1.3333))}
+ .crop-dialog-pro .crop-toolbar{grid-template-columns:1fr;gap:9px}
+ .crop-dialog-pro .crop-heading h3{font-size:18px}
+ .crop-dialog-pro .editor-actions{display:grid;grid-template-columns:1fr 1fr}
+ .crop-dialog-pro .editor-actions .btn{width:100%}
+}
