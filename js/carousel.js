@@ -69,6 +69,7 @@ class ProductCarousel {
         this.calculateItemsPerView();
         this.renderProducts(track);
         this.createDots();
+        this.setupNavigation();
         this.goToSlide(0);
     }
 
@@ -250,6 +251,8 @@ class ProductCarousel {
     }
 
     setupNavigation() {
+        if (this.navigationBound) return;
+        this.navigationBound = true;
         const prevBtn = document.getElementById('carouselPrev');
         const nextBtn = document.getElementById('carouselNext');
         
