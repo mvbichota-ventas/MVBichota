@@ -5,6 +5,9 @@
   const CACHE_TTL_MS = 60 * 1000;
   let cachedLoad = null;
   let cachedAt = 0;
+  let liveUpdatesStarted = false;
+  let refreshTimer = null;
+  let refreshInFlight = false;
 
   async function fallback() {
     const response = await fetch('data/products.json');
@@ -147,6 +150,7 @@
         throw new Error('No está disponible el cliente compartido de Supabase');
       }
       const client = window.MV_getSupabaseClient();
+      startLiveUpdates(client);
 
       let timeoutId;
       const request = Promise.all([
@@ -228,6 +232,49 @@
         source: 'json'
       };
     }
+  }
+
+  function startLiveUpdates(client) {
+    if (liveUpdatesStarted) return;
+    liveUpdatesStarted = true;
+
+    const refresh = async () => {
+      if (refreshInFlight || document.hidden) return;
+      refreshInFlight = true;
+      try {
+        invalidate();
+        const data = await load({ forceRefresh: true });
+        window.dispatchEvent(new CustomEvent('mv:catalog-updated', {
+          detail: copyForConsumer(data)
+        }));
+      } catch (error) {
+        console.warn('[MV Bichota] No se pudo actualizar el catálogo automáticamente:', error.message);
+      } finally {
+        refreshInFlight = false;
+      }
+    };
+
+    // Realtime acelera los cambios; el sondeo cubre proyectos donde
+    // products/categories aún no están habilitados en la publicación Realtime.
+    try {
+      client.channel('mv-public-catalog')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
+          clearTimeout(refreshTimer);
+          refreshTimer = setTimeout(refresh, 350);
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, () => {
+          clearTimeout(refreshTimer);
+          refreshTimer = setTimeout(refresh, 350);
+        })
+        .subscribe();
+    } catch (error) {
+      console.warn('[MV Bichota] Realtime no está disponible; se usará actualización periódica:', error.message);
+    }
+
+    window.setInterval(refresh, 45000);
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) refresh();
+    });
   }
 
   function copyForConsumer(data) {

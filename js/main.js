@@ -93,9 +93,9 @@
     // ================================================
     // Load Data
     // ================================================
-    async function loadData() {
+    async function loadData(options = {}) {
         try {
-            const data = window.MVStoreData ? await window.MVStoreData.load() : await (async()=>{const response=await fetch('data/products.json');return response.json()})();
+            const data = window.MVStoreData ? await window.MVStoreData.load(options) : await (async()=>{const response=await fetch('data/products.json');return response.json()})();
             allProducts = data.products || EMBEDDED_PRODUCTS;
             storeCategories = data.categories || EMBEDDED_CATEGORIES;
             storeBusiness = data.business || EMBEDDED_BUSINESS;
@@ -730,6 +730,21 @@
 
         // Load data and initialize
         loadData();
+
+        // Refrescar el catálogo cuando Supabase notifique cambios o el sondeo detecte novedades.
+        window.addEventListener('mv:catalog-updated', function(event) {
+            const data = event.detail || {};
+            allProducts = (data.products || []).filter(p => p.active !== false);
+            storeCategories = data.categories || [];
+            storeBusiness = data.business || EMBEDDED_BUSINESS;
+            window.MV_STORE_CATALOG_SOURCE = data.source || 'supabase';
+            storeCategories.forEach(cat => {
+                cat.count = allProducts.filter(p => p.category === cat.id).length;
+            });
+            initCatalog();
+            initCategories();
+            initSearch();
+        });
 
         // Initialize UI
         initHeader();
