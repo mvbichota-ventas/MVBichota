@@ -1,28 +1,35 @@
-/* MV Bichota shared light/dark theme controller */
+/* MV Bichota theme controller — shared by storefront and admin */
 (function () {
   'use strict';
-  const KEY = 'mv-bichota-theme';
-  let saved = 'light';
-  try { saved = localStorage.getItem(KEY) || 'light'; } catch (_) {}
-  if (saved !== 'dark' && saved !== 'light') saved = 'light';
-  document.documentElement.setAttribute('data-theme', saved);
+  var KEY = 'mv-bichota-theme';
+  var root = document.documentElement;
 
-  function paint(button, theme) {
-    const dark = theme === 'dark';
-    button.innerHTML = '<span aria-hidden="true">' + (dark ? '☀' : '☾') + '</span><span class="theme-toggle__label">' + (dark ? 'Modo claro' : 'Modo oscuro') + '</span>';
+  function readTheme() {
+    try { return localStorage.getItem(KEY) === 'dark' ? 'dark' : 'light'; }
+    catch (error) { return 'light'; }
+  }
+  function applyTheme(theme) {
+    root.setAttribute('data-theme', theme);
+    root.style.colorScheme = theme;
+    try { localStorage.setItem(KEY, theme); } catch (error) {}
+    document.querySelectorAll('[data-theme-toggle]').forEach(paint);
+  }
+  function paint(button) {
+    var dark = root.getAttribute('data-theme') === 'dark';
+    button.textContent = dark ? '☀' : '☾';
     button.setAttribute('aria-label', dark ? 'Activar modo claro' : 'Activar modo oscuro');
     button.setAttribute('aria-pressed', dark ? 'true' : 'false');
-    button.title = dark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro';
+    button.setAttribute('title', dark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
   }
+  root.setAttribute('data-theme', readTheme());
+  root.style.colorScheme = readTheme();
 
   function init() {
     document.querySelectorAll('[data-theme-toggle]').forEach(function (button) {
-      paint(button, document.documentElement.getAttribute('data-theme') || 'light');
-      button.addEventListener('click', function () {
-        const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-        try { localStorage.setItem(KEY, next); } catch (_) {}
-        document.querySelectorAll('[data-theme-toggle]').forEach(function (item) { paint(item, next); });
+      paint(button);
+      button.addEventListener('click', function (event) {
+        event.preventDefault();
+        applyTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
       });
     });
   }
