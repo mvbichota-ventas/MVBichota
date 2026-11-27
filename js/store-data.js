@@ -143,11 +143,10 @@
         throw new Error('Supabase no está configurado');
       }
 
-      const client = window.supabase.createClient(
-        window.MV_SUPABASE_URL,
-        window.MV_SUPABASE_KEY,
-        { auth: { persistSession: false, autoRefreshToken: false } }
-      );
+      if (typeof window.MV_getSupabaseClient !== 'function') {
+        throw new Error('No está disponible el cliente compartido de Supabase');
+      }
+      const client = window.MV_getSupabaseClient();
 
       let timeoutId;
       const request = Promise.all([
