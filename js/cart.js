@@ -316,7 +316,7 @@ class MVCart {
         if (this.sidebar) {
             this.sidebar.classList.remove('open');
             document.body.classList.remove('cart-open');
-            document.body.style.overflow = '';
+            document.body.style.overflow = document.body.classList.contains('combo-overlay-open') ? 'hidden' : '';
         }
     }
 
