@@ -92,7 +92,7 @@
     timer = window.setInterval(() => {
       activeIndex = (activeIndex + 1) % banners.length;
       render();
-    }, 6500);
+    }, 4000);
   }
 
   async function loadBanners() {
