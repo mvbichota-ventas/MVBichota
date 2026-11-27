@@ -2638,3 +2638,137 @@ ul {
 .btn-block {
     width: 100%;
 }
+
+
+/* MV Bichota responsive refinements: cart, touch controls, floating actions and footer */
+.cart-sidebar {
+    width: min(420px, 100vw);
+    max-width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.cart-sidebar__header { flex: 0 0 auto; }
+.cart-items { flex: 1 1 auto; min-height: 0; overscroll-behavior: contain; }
+.cart-summary {
+    flex: 0 0 auto;
+    max-height: 48dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-bottom: calc(var(--space-lg) + env(safe-area-inset-bottom, 0px));
+}
+.cart-item__info { min-width: 0; }
+.cart-item__quantity {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+.qty-btn {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--color-primary-dark, #6d0000);
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+.qty-btn:active { transform: scale(.96); }
+.qty-value { min-width: 30px; text-align: center; font-size: 1rem; font-weight: 700; }
+.cart-item__cup-price, .combo-price-cup, .price-cup, .carousel-card__price-cup, .search-result-item__cup {
+    display: block;
+    margin-top: 3px;
+    color: #6b7280;
+    font-size: .78rem;
+    font-weight: 700;
+}
+.price-current { display: inline-block; }
+.product-card.is-search-target {
+    outline: 3px solid #d4a72c;
+    outline-offset: 3px;
+    box-shadow: 0 0 0 6px rgba(212,167,44,.16);
+}
+.back-to-top { bottom: calc(100px + env(safe-area-inset-bottom, 0px)); }
+.footer__links { display: grid; gap: 4px; }
+.footer__link { min-height: 38px; display: inline-flex; align-items: center; }
+.footer__bottom { flex-wrap: wrap; }
+@media (max-width: 768px) {
+    .cart-sidebar { width: 100vw; max-width: 100vw; }
+    .cart-summary { max-height: 46dvh; }
+    .cart-summary__actions { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 8px; }
+    .cart-summary__actions .btn { min-height: 46px; padding: 10px 8px; font-size: .82rem; }
+    .cart-summary__total { margin-bottom: 10px; }
+    .cart-item { gap: 10px; align-items: center; }
+    .cart-item__image { width: 56px; height: 56px; }
+    .cart-item__remove span { display: none; }
+    .qty-btn { width: 46px; min-width: 46px; height: 46px; }
+    .back-to-top {
+        width: 44px; height: 44px; right: 14px;
+        bottom: calc(82px + env(safe-area-inset-bottom, 0px));
+    }
+    .footer__grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 22px 16px; }
+    .footer__brand { grid-column: 1 / -1; }
+    .footer__column-title { font-size: .95rem; }
+    .footer__link { font-size: .85rem; line-height: 1.3; }
+    .footer__bottom { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
+}
+@media (max-width: 380px) {
+    .cart-summary { padding: 12px; }
+    .cart-summary__actions { grid-template-columns: 1fr; }
+    .cart-summary__actions .btn { min-height: 44px; }
+    .cart-item__name { font-size: .82rem; }
+    .cart-item__price { font-size: .76rem; }
+}
+
+
+/* Banners administrables de Supabase */
+.managed-banners { padding: clamp(18px, 3vw, 34px) 0; background: var(--color-bg-alt); }
+.managed-banners[hidden] { display: none !important; }
+.managed-banner {
+    position: relative; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    min-height: 230px; overflow: hidden; border-radius: 20px; background: #4b080d;
+    color: #fff; box-shadow: 0 12px 30px rgba(30, 10, 10, .16);
+}
+.managed-banner__image { min-height: 230px; background: linear-gradient(135deg, #570b10, #a51d22); }
+.managed-banner__image img { width: 100%; height: 100%; min-height: 230px; display: block; object-fit: cover; }
+.managed-banner__content {
+    display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+    gap: 12px; padding: clamp(20px, 4vw, 46px);
+    background: linear-gradient(125deg, #52090e, #8c151a);
+}
+.managed-banner__content h2 { margin: 0; color: #fff; font: 700 clamp(1.35rem, 3vw, 2.4rem)/1.15 var(--font-serif); }
+.managed-banner__content p { margin: 0; color: rgba(255,255,255,.9); line-height: 1.5; }
+.managed-banner__button {
+    display: inline-flex; align-items: center; justify-content: center; min-height: 44px;
+    padding: 10px 18px; border-radius: 999px; background: #d7ad45; color: #2c0909;
+    font-weight: 800; text-decoration: none;
+}
+.managed-banners__controls { display: flex; justify-content: center; align-items: center; gap: 14px; padding-top: 12px; }
+.managed-banners__controls[hidden] { display: none !important; }
+.managed-banners__controls > button {
+    width: 34px; height: 34px; border: 0; border-radius: 50%; cursor: pointer;
+    background: #650c13; color: #fff; font-size: 1.35rem;
+}
+.managed-banners__dots { display: flex; align-items: center; gap: 8px; }
+.managed-banners__dot { width: 9px; height: 9px; padding: 0; border: 0; border-radius: 50%; background: #c7b7b7; cursor: pointer; }
+.managed-banners__dot.active { width: 22px; border-radius: 99px; background: #8f1119; }
+@media (max-width: 640px) {
+    .managed-banners { padding: 14px 0; }
+    .managed-banner { grid-template-columns: 1fr; min-height: 0; }
+    .managed-banner__image, .managed-banner__image img { min-height: 150px; max-height: 190px; }
+    .managed-banner__content { padding: 18px; gap: 9px; }
+    .managed-banner__content h2 { font-size: 1.35rem; }
+    .managed-banner__content p { font-size: .9rem; }
+}

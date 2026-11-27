@@ -48,6 +48,7 @@
       categoryId: product.category_id || null,
       image: product.image_url || (Array.isArray(product.images) ? product.images[0] : null) || '',
       images: Array.isArray(product.images) ? product.images.filter(image => typeof image === 'string') : [],
+      priceCup: product.price_cup == null ? null : Number(product.price_cup),
       stock: Number(product.stock || 0),
       available: product.is_available !== false && Number(product.stock || 0) > 0,
       active: product.active !== false,
@@ -153,11 +154,30 @@
       startLiveUpdates(client);
 
       let timeoutId;
-      const request = Promise.all([
-        client.from('products')
-          .select('id,legacy_id,slug,name,description,price,sale_price,unit,category_id,image_url,images,stock,is_available,active,featured,sort_order,allow_in_combo,combo_order,featured_order')
+      const productFields = 'id,legacy_id,slug,name,description,price,sale_price,unit,category_id,image_url,images,stock,is_available,active,featured,sort_order,allow_in_combo,combo_order,featured_order';
+      const loadProducts = async () => {
+        let result = await client.from('products')
+          .select(productFields + ',price_cup')
           .eq('active', true)
-          .order('sort_order', { ascending: true }),
+          .order('sort_order', { ascending: true });
+
+        // price_cup es opcional hasta que se apruebe y ejecute la migración.
+        // Si aún no existe, seguimos cargando el catálogo con el esquema anterior.
+        const errorText = [result.error?.message, result.error?.details, result.error?.hint].join(' ');
+        const missingCupColumn = result.error &&
+          /price_cup/i.test(errorText) &&
+          (['42703', 'PGRST204'].includes(result.error.code) || /(column|schema cache|does not exist|not found)/i.test(errorText));
+        if (missingCupColumn) {
+          result = await client.from('products')
+            .select(productFields)
+            .eq('active', true)
+            .order('sort_order', { ascending: true });
+        }
+        return result;
+      };
+
+      const request = Promise.all([
+        loadProducts(),
         client.from('categories')
           .select('id,name,slug,description,image_url,active,allow_in_combo,sort_order,icon')
           .eq('active', true)

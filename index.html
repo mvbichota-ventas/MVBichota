@@ -114,6 +114,17 @@
             </div>
         </section>
 
+        <section class="managed-banners" id="managedBanners" aria-label="Promociones de MV Bichota" hidden>
+            <div class="container">
+                <div class="managed-banners__slide" id="managedBannerSlide"></div>
+                <div class="managed-banners__controls" id="managedBannerControls" hidden>
+                    <button type="button" id="managedBannerPrev" aria-label="Banner anterior">‹</button>
+                    <div id="managedBannerDots" class="managed-banners__dots"></div>
+                    <button type="button" id="managedBannerNext" aria-label="Banner siguiente">›</button>
+                </div>
+            </div>
+        </section>
+
         <section class="featured-section" id="destacados"><div class="container"><div class="featured-section__header"><h2 class="featured-section__title">Productos destacados</h2><p class="featured-section__subtitle">Descubre nuestros productos favoritos</p><a href="#catalogo" class="featured-section__link">Ver todos los productos <i data-lucide="arrow-right"></i></a></div><div class="carousel"><div class="carousel__wrapper"><div class="carousel__track" id="carouselTrack"></div></div><button class="carousel__nav carousel__nav--prev" id="carouselPrev" aria-label="Producto anterior"><i data-lucide="chevron-left"></i></button><button class="carousel__nav carousel__nav--next" id="carouselNext" aria-label="Siguiente producto"><i data-lucide="chevron-right"></i></button></div><div class="carousel__dots" id="carouselDots"></div></div></section>
 
         <section class="benefits"><div class="container"><div class="benefits__grid">
@@ -159,7 +170,7 @@
     <nav class="mobile-bottom-nav" aria-label="Navegación móvil"><div class="mobile-bottom-nav__content"><a href="#inicio" class="mobile-nav-item active"><i data-lucide="home"></i><span>Inicio</span></a><a href="#catalogo" class="mobile-nav-item"><i data-lucide="shopping-bag"></i><span>Productos</span></a><button class="mobile-nav-item mobile-nav-item--combo" id="comboNavBtn" aria-label="Arma tu combo"><i data-lucide="gift"></i><span>Combo</span></button><button class="mobile-nav-item cart-btn" id="mobileCartBtn" aria-label="Carrito de compras"><i data-lucide="shopping-cart"></i><span>Carrito</span></button><a href="#contacto" class="mobile-nav-item"><i data-lucide="phone"></i><span>Contacto</span></a></div></nav>
 
     <div class="combo-bar" id="comboBar"><div class="combo-bar__content"><div class="combo-bar__info"><div class="combo-bar__icon"><i data-lucide="gift"></i></div><div class="combo-bar__text"><h3 class="combo-bar__title">Mi combo</h3><p class="combo-bar__count" id="comboBarCount">0 productos &middot; 0 unidades</p></div></div><span class="combo-bar__total" id="comboBarTotal">$0.00</span><div class="combo-bar__actions"><button class="combo-bar__view-btn" id="comboBarViewBtn">VER COMBO</button></div></div></div>
-    <div class="combo-panel" id="comboPanel"><div class="combo-panel__container"><div class="combo-panel__header"><div class="combo-panel__header-left"><h3 class="combo-panel__title">🎁 Mi combo</h3><p class="combo-panel__count" id="comboPanelCount">0 productos &middot; 0 unidades</p></div><button class="combo-panel__close" aria-label="Cerrar panel de combo"><i data-lucide="x"></i></button></div><div class="combo-panel__items" id="comboPanelItems"><div class="combo-panel__empty"><i data-lucide="package"></i><p>Tu combo está vacío</p><p class="combo-panel__empty-sub">Agrega productos del catálogo</p></div></div><div class="combo-panel__footer"><div class="combo-panel__summary"><span class="combo-panel__summary-label">Total</span><span class="combo-panel__summary-total" id="comboPanelTotal">$0.00</span></div><div class="combo-panel__actions"><button class="combo-panel__add-btn" id="comboPanelAddBtn" disabled><i data-lucide="shopping-cart"></i>AGREGAR AL CARRITO</button><button class="combo-panel__clear-btn" id="comboPanelClearBtn"><i data-lucide="trash-2"></i>Vaciar</button></div></div></div></div>
+    <div class="combo-panel" id="comboPanel"><div class="combo-panel__container"><div class="combo-panel__header"><div class="combo-panel__header-left"><h3 class="combo-panel__title">🎁 Mi combo</h3><p class="combo-panel__count" id="comboPanelCount">0 productos &middot; 0 unidades</p><a href="#inicio" class="combo-panel__home" id="comboPanelHome">← Volver al inicio</a></div><button class="combo-panel__close" aria-label="Cerrar panel de combo"><i data-lucide="x"></i></button></div><div class="combo-panel__items" id="comboPanelItems"><div class="combo-panel__empty"><i data-lucide="package"></i><p>Tu combo está vacío</p><p class="combo-panel__empty-sub">Agrega productos del catálogo</p></div></div><div class="combo-panel__footer"><div class="combo-panel__summary"><span class="combo-panel__summary-label">Total</span><span class="combo-panel__summary-total" id="comboPanelTotal">$0.00</span></div><div class="combo-panel__actions"><button class="combo-panel__add-btn" id="comboPanelAddBtn" disabled><i data-lucide="shopping-cart"></i>AGREGAR AL CARRITO</button><button class="combo-panel__clear-btn" id="comboPanelClearBtn"><i data-lucide="trash-2"></i>Vaciar</button></div></div></div></div>
 
     <script src="js/cart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -168,5 +179,6 @@
     <script src="js/main.js"></script>
     <script src="js/combo-bar.js"></script>
     <script src="js/carousel.js"></script>
+    <script defer src="js/storefront-banners.js"></script>
 </body>
 </html>

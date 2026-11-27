@@ -926,3 +926,67 @@
 .combo-card-container.in-combo {
     animation: comboBtnPulse 0.3s ease;
 }
+
+
+/* Responsive combo usability and safe-area handling */
+.combo-fab { bottom: 170px; }
+.combo-selector__container {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+}
+.combo-selector__header-main { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.combo-selector__home, .combo-panel__home {
+    color: var(--color-primary);
+    font-size: .82rem;
+    font-weight: 700;
+    text-decoration: none;
+    width: fit-content;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+}
+.combo-selector__products, .combo-panel__items { min-height: 0; overscroll-behavior: contain; }
+.combo-selector__footer, .combo-panel__footer {
+    flex: 0 0 auto;
+    padding-bottom: calc(var(--space-lg) + env(safe-area-inset-bottom, 0px));
+}
+.combo-selector__qty-btn, .combo-panel-qty-btn {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 1.25rem;
+    touch-action: manipulation;
+}
+.combo-panel__container {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+}
+@media (max-width: 768px) {
+    .combo-fab {
+        right: 14px;
+        bottom: calc(145px + env(safe-area-inset-bottom, 0px));
+        width: 48px; height: 48px; padding: 0;
+        justify-content: center; border-radius: 50%;
+    }
+    .combo-selector__container { width: 100%; max-height: 100dvh; }
+    .combo-selector__header { padding: 12px 14px; gap: 10px; }
+    .combo-selector__header h3 { font-size: .98rem; }
+    .combo-selector__home { font-size: .78rem; min-height: 32px; }
+    .combo-selector__products { padding: 12px; }
+    .combo-panel__container { width: 100%; max-height: 100dvh; border-radius: 0; }
+    .combo-panel__header { padding: 12px 16px; }
+    .combo-panel__footer { padding: 12px 16px calc(14px + env(safe-area-inset-bottom, 0px)); }
+    .combo-panel__actions { gap: 8px; }
+    .combo-panel__add-btn { min-height: 48px; }
+    .combo-panel__clear-btn { min-height: 44px; }
+}
+@media (max-width: 380px) {
+    .combo-selector__product { gap: 8px; padding: 10px; }
+    .combo-selector__product img { width: 56px; height: 56px; }
+    .combo-selector__add-btn { padding: 9px 10px; font-size: .78rem; }
+}

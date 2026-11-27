@@ -23,6 +23,12 @@ class ProductCarousel {
         await this.loadProducts();
         this.setupCarousel();
         this.setupTouchEvents();
+        window.addEventListener('mv:catalog-updated', event => {
+            const data = event.detail || {};
+            this.products = data.products || [];
+            this.refreshFeaturedProducts();
+            this.refreshCarousel();
+        });
         
         setTimeout(() => {
             this.setupAutoplay();
@@ -37,9 +43,34 @@ class ProductCarousel {
             this.products = this.getEmbeddedProducts();
         }
         
-        this.featuredProducts = this.products
-            .filter(p => p.active && p.featured)
-            .sort((a, b) => (a.featuredOrder || 0) - (b.featuredOrder || 0));
+        this.refreshFeaturedProducts();
+    }
+
+    refreshFeaturedProducts() {
+        this.featuredProducts = (this.products || [])
+            .filter(p => p.active !== false && (p.featured === true || Number(p.featuredOrder || 0) > 0))
+            .sort((a, b) => (Number(a.featuredOrder || 0) || Number.MAX_SAFE_INTEGER) - (Number(b.featuredOrder || 0) || Number.MAX_SAFE_INTEGER));
+    }
+
+    refreshCarousel() {
+        const track = document.getElementById('carouselTrack');
+        const section = document.getElementById('destacados');
+        const dots = document.getElementById('carouselDots');
+        if (!track) return;
+        if (!this.featuredProducts.length) {
+            track.innerHTML = '';
+            if (dots) dots.innerHTML = '';
+            if (section) section.hidden = true;
+            this.stopAutoplay();
+            return;
+        }
+        if (section) section.hidden = false;
+        this.currentIndex = 0;
+        this.calculateItemsPerView();
+        this.renderProducts(track);
+        this.createDots();
+        this.setupNavigation();
+        this.goToSlide(0);
     }
 
     getEmbeddedProducts() {
@@ -57,7 +88,11 @@ class ProductCarousel {
 
     setupCarousel() {
         const track = document.getElementById('carouselTrack');
-        if (!track || this.featuredProducts.length === 0) return;
+        if (!track) return;
+        if (!this.featuredProducts.length) {
+            this.refreshCarousel();
+            return;
+        }
 
         this.renderProducts(track);
         this.calculateItemsPerView();
@@ -65,10 +100,14 @@ class ProductCarousel {
         this.setupNavigation();
         this.goToSlide(0);
         
-        window.addEventListener('resize', () => {
-            this.calculateItemsPerView();
-            this.goToSlide(0);
-        });
+        if (!this.resizeHandler) {
+            this.resizeHandler = () => {
+                this.calculateItemsPerView();
+                this.createDots();
+                this.goToSlide(0);
+            };
+            window.addEventListener('resize', this.resizeHandler, { passive: true });
+        }
     }
 
     renderProducts(track) {
@@ -96,7 +135,8 @@ class ProductCarousel {
                             <span class="carousel-card__category">${this.getCategoryName(product.category)}</span>
                             <h3 class="carousel-card__title">${product.name}</h3>
                             <div class="carousel-card__price">
-                                <span class="carousel-card__price-current">$${product.price.toFixed(2)}</span>
+                                <span class="carousel-card__price-current">USD ${Number(product.price || 0).toFixed(2)}</span>
+                                ${product.priceCup != null ? `<span class="carousel-card__price-cup">CUP ${Number(product.priceCup).toFixed(2)}</span>` : ''}
                                 ${hasDiscount ? `<span class="carousel-card__price-old">$${product.oldPrice.toFixed(2)}</span>` : ''}
                                 ${hasDiscount ? `<span class="carousel-card__discount">-${discount}%</span>` : ''}
                             </div>
@@ -200,7 +240,7 @@ class ProductCarousel {
     calculateItemsPerView() {
         const width = window.innerWidth;
         if (width <= 600) {
-            this.itemsPerView = 1;
+            this.itemsPerView = width <= 360 ? 1 : 2;
         } else if (width <= 900) {
             this.itemsPerView = 2;
         } else if (width <= 1200) {
@@ -211,6 +251,8 @@ class ProductCarousel {
     }
 
     setupNavigation() {
+        if (this.navigationBound) return;
+        this.navigationBound = true;
         const prevBtn = document.getElementById('carouselPrev');
         const nextBtn = document.getElementById('carouselNext');
         
@@ -273,6 +315,7 @@ class ProductCarousel {
         if (!track) return;
 
         const totalSlides = Math.ceil(this.featuredProducts.length / this.itemsPerView);
+        if (!totalSlides) return;
         
         if (index >= totalSlides) {
             index = 0;
@@ -283,8 +326,10 @@ class ProductCarousel {
         
         this.currentIndex = index;
 
-        const itemWidth = track.children[0] ? track.children[0].offsetWidth + 16 : 300;
-        const offset = this.currentIndex * this.itemsPerView * itemWidth;
+        const item = track.children[0];
+        const itemWidth = item ? item.getBoundingClientRect().width : 300;
+        const gap = parseFloat(window.getComputedStyle(track).columnGap || window.getComputedStyle(track).gap) || 0;
+        const offset = this.currentIndex * this.itemsPerView * (itemWidth + gap);
         track.style.transform = `translateX(-${offset}px)`;
 
         this.updateNavigation();
