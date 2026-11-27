@@ -270,10 +270,13 @@ class ComboBuilder {
         }
         
         if (this.isSelectorOpen) {
+            this.closePanel();
             this.renderSelectorProducts();
+            document.body.classList.add('combo-overlay-open');
             document.body.style.overflow = 'hidden';
         } else {
-            document.body.style.overflow = '';
+            document.body.classList.remove('combo-overlay-open');
+            document.body.style.overflow = (this.isPanelOpen || document.body.classList.contains('cart-open')) ? 'hidden' : '';
         }
     }
 
@@ -283,7 +286,8 @@ class ComboBuilder {
         if (selector) {
             selector.classList.remove('open');
         }
-        document.body.style.overflow = '';
+        document.body.classList.remove('combo-overlay-open');
+        document.body.style.overflow = (this.isPanelOpen || document.body.classList.contains('cart-open')) ? 'hidden' : '';
     }
 
     // ================================================
@@ -491,6 +495,7 @@ class ComboBuilder {
         this.isPanelOpen = true;
         if (this.comboPanel) {
             this.comboPanel.classList.add('open');
+            document.body.classList.add('combo-overlay-open');
             document.body.style.overflow = 'hidden';
         }
         this.renderComboPanel();
@@ -500,8 +505,9 @@ class ComboBuilder {
         this.isPanelOpen = false;
         if (this.comboPanel) {
             this.comboPanel.classList.remove('open');
-            document.body.style.overflow = '';
         }
+        if (!this.isSelectorOpen) document.body.classList.remove('combo-overlay-open');
+        document.body.style.overflow = (this.isSelectorOpen || document.body.classList.contains('cart-open')) ? 'hidden' : '';
     }
 
     togglePanel() {
@@ -646,6 +652,15 @@ class ComboBuilder {
             }
         });
         
+        // Close combo overlays before following Home, Products or Contact.
+        // The saved combo itself remains untouched in localStorage.
+        document.querySelectorAll('.mobile-bottom-nav a.mobile-nav-item[href]').forEach(link => {
+            link.addEventListener('click', () => {
+                this.closeSelector();
+                this.closePanel();
+            });
+        });
+
         // Combo nav button in mobile bottom nav
         const comboNavBtn = document.getElementById('comboNavBtn');
         if (comboNavBtn) {
