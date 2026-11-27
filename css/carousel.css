@@ -453,3 +453,23 @@
         scroll-snap-align: start;
     }
 }
+
+
+/* Responsive featured carousel: keep every featured card reachable and visible */
+.carousel__track { align-items: stretch; will-change: transform; }
+.carousel__item { box-sizing: border-box; }
+.carousel-card__price { flex-wrap: wrap; row-gap: 4px; }
+.carousel-card__price-cup { flex-basis: 100%; }
+@media (max-width: 600px) {
+    .carousel { padding: 0 8px; }
+    .carousel__wrapper { margin: 0; }
+    .carousel__item { flex: 0 0 calc(50% - 8px); min-width: 0; padding: 0 3px; }
+    .carousel-card__content { padding: 10px; }
+    .carousel-card__title { font-size: .82rem; min-height: 2.1em; }
+    .carousel-card__price-current { font-size: 1rem; }
+    .carousel-card__cart-btn { font-size: .78rem; padding: 9px 8px; }
+}
+@media (max-width: 360px) {
+    .carousel__item { flex-basis: calc(100% - 8px); }
+    .carousel-card__title { font-size: .95rem; }
+}
