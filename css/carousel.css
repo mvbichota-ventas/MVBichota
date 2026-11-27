@@ -534,3 +534,20 @@
         flex-basis: calc(100% - 8px);
     }
 }
+
+/* Mobile featured products: show one complete card per view */
+@media(max-width:600px) {
+  .carousel { padding:0 14px !important; }
+  .carousel__wrapper { margin:0 !important; }
+  .carousel__item { flex:0 0 100% !important; min-width:0 !important; padding:0 4px !important; }
+  .carousel-card { width:100%; border-radius:16px; }
+  .carousel-card__content { padding:16px !important; }
+  .carousel-card__title { font-size:.95rem !important; min-height:2.4em; }
+  .carousel-card__price-current { font-size:1.12rem !important; }
+  .carousel-card__cart-btn { min-height:46px; font-size:.88rem !important; }
+}
+html[data-theme="dark"] .featured-section,
+html[data-theme="dark"] .carousel-card { background:#191515 !important; color:#f4eeee !important; }
+html[data-theme="dark"] .carousel-card__image { background:#302626 !important; }
+html[data-theme="dark"] .carousel-card__title { color:#f8eeee !important; }
+html[data-theme="dark"] .carousel-card__wishlist { background:#302626 !important; }
