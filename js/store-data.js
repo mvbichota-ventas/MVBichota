@@ -55,16 +55,10 @@
   }
 
   async function loadCatalog() {
-    let local;
     try {
-      local = await fallback();
-    } catch (error) {
-      local = { products: [], categories: [] };
-    }
-
-    try {
+      // Supabase es la fuente principal; el JSON se consulta únicamente si falla.
       if (!window.supabase || !window.MV_SUPABASE_URL || !window.MV_SUPABASE_KEY) {
-        throw new Error('Supabase no configurado');
+        throw new Error('Supabase no está configurado');
       }
 
       const client = window.supabase.createClient(
@@ -72,38 +66,80 @@
         window.MV_SUPABASE_KEY,
         { auth: { persistSession: false, autoRefreshToken: false } }
       );
-      const [productResult, categoryResult] = await Promise.all([
-        client.from('products').select('*, categories(slug,name)').eq('active', true).order('sort_order'),
-        client.from('categories').select('*').eq('active', true).order('sort_order')
+
+      let timeoutId;
+      const request = Promise.all([
+        client.from('products')
+          .select('*')
+          .eq('active', true)
+          .order('sort_order', { ascending: true }),
+        client.from('categories')
+          .select('*')
+          .eq('active', true)
+          .order('sort_order', { ascending: true })
       ]);
+      const timeout = new Promise((_, reject) => {
+        timeoutId = setTimeout(
+          () => reject(new Error('Supabase tardó más de 8 segundos en responder')),
+          8000
+        );
+      });
+
+      let productResult;
+      let categoryResult;
+      try {
+        [productResult, categoryResult] = await Promise.race([request, timeout]);
+      } finally {
+        clearTimeout(timeoutId);
+      }
 
       if (productResult.error) throw productResult.error;
-      if (categoryResult.error) throw categoryResult.error;
-      if (!productResult.data || productResult.data.length === 0) {
-        throw new Error('Supabase no contiene productos; se usa el catálogo de respaldo');
-      }
 
-      const categories = categoryResult.data.map(mapCategory);
-      const categoryById = new Map(categoryResult.data.map(category => [category.id, category]));
-      const products = productResult.data.map(product => mapProduct(product, categoryById));
+      // Si no hay productos activos, respetamos el resultado de Supabase:
+      // no sustituimos un catálogo vacío por datos locales desactualizados.
+      const productRows = productResult.data || [];
+      const categoryRows = !categoryResult.error && Array.isArray(categoryResult.data)
+        ? categoryResult.data
+        : [];
 
-      if (products.some(product => !product.category)) {
-        const localCategories = local.categories || [];
-        products.forEach(product => {
-          if (!product.category) {
-            const category = localCategories.find(item => item.id === product.categoryId);
-            if (category) product.category = category.id;
-          }
-        });
-      }
+      const categories = categoryRows.map(mapCategory);
+      const categoryById = new Map(categoryRows.map(category => [category.id, category]));
+      const products = productRows.map(product => {
+        const mapped = mapProduct(product, categoryById);
+        const stock = Number(product.stock || 0);
+        mapped.available = product.is_available !== false && stock > 0;
+        mapped.stock = stock;
+        if (!mapped.category) {
+          const category = categoryById.get(product.category_id);
+          if (category) mapped.category = category.slug || category.id;
+        }
+        return mapped;
+      });
 
       categories.forEach(category => {
         category.count = products.filter(product => product.category === category.id).length;
       });
 
-      return { ...local, products, categories, source: 'supabase' };
+      let local = { products: [], categories: [], business: {} };
+      if (categoryResult.error) {
+        console.warn('[MV Bichota] No se pudieron cargar categorías:', categoryResult.error.message);
+        try { local = await fallback(); } catch (_) {}
+      }
+
+      return {
+        ...local,
+        products,
+        categories: categories.length ? categories : (local.categories || []),
+        source: 'supabase'
+      };
     } catch (error) {
-      console.warn('[MV Bichota] Catálogo de respaldo:', error.message);
+      console.error('[MV Bichota] Falló la carga desde Supabase:', error.message);
+      let local = { products: [], categories: [], business: {} };
+      try {
+        local = await fallback();
+      } catch (fallbackError) {
+        console.error('[MV Bichota] También falló el catálogo local:', fallbackError);
+      }
       return {
         ...local,
         products: (local.products || []).filter(product => product.active !== false),
