@@ -431,85 +431,26 @@ class ComboBuilder {
             total: total
         };
 
-        // Add to cart
-        if (window.mvCart) {
-            window.mvCart.addCombo(combo);
-            
-            // Show success message
-            this.showSuccessMessage();
-        } else {
-            alert('Error: Sistema de carrito no disponible');
+        if (!window.mvCart || typeof window.mvCart.addCombo !== 'function') {
+            this.showSuccessMessage('No se pudo abrir el carrito. Actualiza la página e inténtalo de nuevo.', true);
+            return;
         }
+        window.mvCart.addCombo(combo);
+        window.requestAnimationFrame(() => window.mvCart?.openCart?.());
+        this.showSuccessMessage('¡Combo agregado! El carrito está abierto.');
     }
 
-    showSuccessMessage() {
-        const modal = document.createElement('div');
-        modal.className = 'combo-success-modal';
-        modal.innerHTML = `
-            <div class="combo-success-modal__content">
-                <div class="success-icon">✅</div>
-                <h2>¡Combo agregado!</h2>
-                <p>Tu combo ha sido agregado al carrito exitosamente.</p>
-                <div class="success-actions">
-                    <a href="index.html" class="btn btn-outline">Seguir Comprando</a>
-                    <a href="checkout.html" class="btn btn-primary">Ir al Carrito</a>
-                </div>
-            </div>
-        `;
-
-        document.body.appendChild(modal);
-
-        // Add styles
-        const style = document.createElement('style');
-        style.textContent = `
-            .combo-success-modal {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0, 0, 0, 0.5);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 10000;
-                animation: fadeIn 0.3s ease;
-            }
-            .combo-success-modal__content {
-                background: white;
-                padding: 40px;
-                border-radius: 20px;
-                text-align: center;
-                max-width: 400px;
-                margin: 20px;
-            }
-            .success-icon {
-                font-size: 4rem;
-                margin-bottom: 20px;
-            }
-            .combo-success-modal__content h2 {
-                font-family: var(--font-serif);
-                font-size: 1.5rem;
-                margin-bottom: 10px;
-            }
-            .combo-success-modal__content p {
-                color: #666;
-                margin-bottom: 30px;
-            }
-            .success-actions {
-                display: flex;
-                gap: 10px;
-                justify-content: center;
-            }
-        `;
-        document.head.appendChild(style);
-
-        // Close on backdrop click
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.remove();
-            }
-        });
+    showSuccessMessage(message = '¡Combo agregado al carrito!', isError = false) {
+        const toast = document.createElement('div');
+        toast.className = 'combo-builder-toast' + (isError ? ' is-error' : '');
+        toast.setAttribute('role', 'status');
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        window.setTimeout(() => toast.classList.add('is-visible'), 10);
+        window.setTimeout(() => {
+            toast.classList.remove('is-visible');
+            window.setTimeout(() => toast.remove(), 220);
+        }, 3000);
     }
 }
 
