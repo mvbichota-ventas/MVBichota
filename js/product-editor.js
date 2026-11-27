@@ -52,7 +52,9 @@ function renderGallery(){
  }
  function close(){if(closed)return;closed=true;if(dialog.open)dialog.close();dialog.remove()}
  img.onload=draw;
- img.onerror=()=>{toast('No se pudo cargar la fotografía para recortarla.',true);close()};
+ img.onerror=()=>{toast('No se pudo cargar la fotografía para recortarla. Intenta reemplazarla o subirla nuevamente.',true);close()};
+ // Remote product images must opt into CORS before assigning src so the canvas can export the crop.
+ if(!item.url.startsWith('blob:')&&!item.url.startsWith('data:'))img.crossOrigin='anonymous';
  img.src=item.url;
  zoomControl.addEventListener('input',e=>{zoom=Number(e.target.value);draw()});
  canvas.addEventListener('pointerdown',e=>{start={x:e.clientX-dx,y:e.clientY-dy};canvas.setPointerCapture(e.pointerId)});
@@ -60,18 +62,31 @@ function renderGallery(){
  const stopDrag=()=>{start=null};
  canvas.addEventListener('pointerup',stopDrag);
  canvas.addEventListener('pointercancel',stopDrag);
- cancel.addEventListener('click',e=>{e.preventDefault();close()});
- apply.addEventListener('click',e=>{
-  e.preventDefault();
+ cancel.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();close()});
+ apply.addEventListener('click',async e=>{
+  e.preventDefault();e.stopPropagation();
+  if(apply.disabled)return;
   if(!img.complete||!img.naturalWidth){toast('Espera a que termine de cargar la fotografía.',true);return}
   apply.disabled=true;apply.textContent='Aplicando…';
-  canvas.toBlob(blob=>{
-   if(!blob){apply.disabled=false;apply.textContent='Aplicar recorte';toast('No se pudo generar el recorte.',true);return}
+  try{
+   // Export in a promise so synchronous canvas security errors cannot leave the button stuck.
+   const blob=await new Promise((resolve,reject)=>{
+    try{canvas.toBlob(result=>result?resolve(result):reject(new Error('El navegador no pudo generar la imagen recortada. Comprueba que la fotografía permita edición y vuelve a intentarlo.')),'image/jpeg',.92)}
+    catch(error){reject(error)}
+   });
    const file=new File([blob],'product-crop.jpg',{type:'image/jpeg'});
+   const nextUrl=URL.createObjectURL(file);
    if(item.file&&item.url.startsWith('blob:'))URL.revokeObjectURL(item.url);
-   item.file=file;item.url=URL.createObjectURL(file);
+   item.file=file;item.url=nextUrl;
    renderGallery();close();
-  },'image/jpeg',.92);
+   toast('Recorte aplicado. Guarda los cambios del producto para conservarlo.');
+  }catch(error){
+   console.error('[MV Bichota] Image crop failed',error);
+   const reason=error?.name==='SecurityError'?'El navegador bloqueó la edición de esta imagen por seguridad. Vuelve a subir la fotografía y prueba otra vez.':(error?.message||'No se pudo aplicar el recorte.');
+   toast(reason,true);
+  }finally{
+   if(!closed){apply.disabled=false;apply.textContent='Aplicar recorte'}
+  }
  });
  dialog.addEventListener('cancel',e=>{e.preventDefault();close()});
  dialog.addEventListener('click',e=>{if(e.target===dialog)close()});
