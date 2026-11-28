@@ -60,6 +60,7 @@
     <link rel="stylesheet" href="css/hero-banner.css">
     <link rel="stylesheet" href="css/combo-bar.css">
     <link rel="stylesheet" href="css/carousel.css">
+    <link rel="stylesheet" href="css/daily-offers.css">
     <script defer src="js/theme.js"></script>
 </head>
 <body>
@@ -117,6 +118,13 @@
                 <button class="btn btn-primary btn-lg" id="heroComboBtn" type="button">
                     <i data-lucide="gift" aria-hidden="true"></i> Arma tu combo
                 </button>
+            </div>
+        </section>
+
+        <section class="daily-offers" id="dailyOffers" aria-labelledby="dailyOffersTitle" hidden>
+            <div class="daily-offers__inner">
+                <div class="daily-offers__header"><div><h2 id="dailyOffersTitle">OFERTAS DEL DÍA</h2><p>¡No dejes pasar estas rebajas!</p></div><div class="daily-offers__countdown"><span>Termina en:</span><div class="daily-offers__timer" id="dailyOffersTimer" aria-live="off"><b>00</b><i>:</i><b>00</b><i>:</i><b>00</b></div></div></div>
+                <div class="daily-offers__grid" id="dailyOffersGrid"></div>
             </div>
         </section>
 
@@ -224,6 +232,7 @@
     <script src="js/supabase-config.js"></script>
     <script src="js/store-data.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/daily-offers.js"></script>
     <script src="js/combo-bar.js"></script>
     <script src="js/carousel.js"></script>
     <script defer src="js/storefront-banners.js"></script>
