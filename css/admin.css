@@ -278,3 +278,5 @@ html[data-theme="dark"] .crop-dialog-pro .crop-toolbar select{background:#302528
 .daily-offers-actions{display:grid;gap:8px}
 .daily-offers-actions .btn{justify-self:start}
 @media(max-width:600px){.daily-offer-row{grid-template-columns:20px 46px minmax(0,1fr) 82px;gap:8px;padding:8px}.daily-offer-row>img{width:46px;height:46px}.daily-offer-discount input{width:52px}.daily-offers-settings{display:grid;gap:8px}}
+
+.daily-offer-row{cursor:default}
