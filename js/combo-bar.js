@@ -239,7 +239,7 @@ class ComboBuilder {
                             </div>
                         ` : `
                             <button class="combo-selector__add-btn" data-id="${product.id}">
-                                <i data-lucide="plus"></i> Agregar
+                                <i data-lucide="plus"></i> Agregar al combo
                             </button>
                         `}
                     </div>
