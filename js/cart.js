@@ -370,15 +370,27 @@ class MVCart {
                 </div>
             `;
         } else {
-            // Render individual items
-            this.cart.items.forEach(item => {
-                itemsContainer.appendChild(this.createCartItemHTML(item));
-            });
+            // Grupo 1: productos individuales añadidos al carrito
+            if (this.cart.items.length > 0) {
+                const productsSection = document.createElement('section');
+                productsSection.className = 'cart-section cart-section--products';
+                productsSection.innerHTML = '<h4 class="cart-section__title">Productos añadidos</h4>';
+                this.cart.items.forEach(item => {
+                    productsSection.appendChild(this.createCartItemHTML(item));
+                });
+                itemsContainer.appendChild(productsSection);
+            }
 
-            // Render combos
-            this.cart.combos.forEach(combo => {
-                itemsContainer.appendChild(this.createComboItemHTML(combo));
-            });
+            // Grupo 2: combos personalizados, separados y con miniaturas
+            if (this.cart.combos.length > 0) {
+                const combosSection = document.createElement('section');
+                combosSection.className = 'cart-section cart-section--combos';
+                combosSection.innerHTML = '<h4 class="cart-section__title">Combos personalizados</h4>';
+                this.cart.combos.forEach(combo => {
+                    combosSection.appendChild(this.createComboItemHTML(combo));
+                });
+                itemsContainer.appendChild(combosSection);
+            }
         }
 
         // Update summary
@@ -429,17 +441,25 @@ class MVCart {
     createComboItemHTML(combo) {
         const div = document.createElement('div');
         div.className = 'cart-item cart-combo';
-        
-        const itemsList = combo.items.map(item => 
+
+        const comboItems = Array.isArray(combo.items) ? combo.items : [];
+        const itemsList = comboItems.map(item =>
             `${item.name} x${item.quantity}`
         ).join(', ');
 
+        const thumbnails = comboItems.map(item => `
+            <div class="cart-combo__product" title="${item.name} · cantidad ${item.quantity}">
+                <img class="cart-combo__product-image" src="${item.image || ''}" alt="${item.name}" loading="lazy" onerror="this.style.visibility='hidden'">
+                <span class="cart-combo__product-name">${item.name}</span>
+                <span class="cart-combo__product-quantity">x${item.quantity}</span>
+            </div>
+        `).join('');
+
         div.innerHTML = `
-            <div class="cart-item__combo-icon">🧩</div>
-            <div class="cart-item__info">
+            <div class="cart-item__info cart-combo__info">
                 <h4 class="cart-item__name">${combo.name}</h4>
-                <p class="cart-item__combo-items">${itemsList || 'Combo personalizado'}</p>
-                <p class="cart-item__price">$${combo.total.toFixed(2)}</p>
+                <div class="cart-combo__products">${thumbnails || '<span class="cart-item__combo-items">Combo personalizado</span>'}</div>
+                <p class="cart-item__price">USD ${Number(combo.total || 0).toFixed(2)}</p>
             </div>
             <button class="cart-item__remove combo-remove" data-combo-id="${combo.id}" aria-label="Eliminar combo">
                 <i data-lucide="trash-2"></i>
