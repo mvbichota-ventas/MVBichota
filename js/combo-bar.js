@@ -214,7 +214,7 @@ class ComboBuilder {
         const container = document.getElementById('comboSelectorProducts');
         if (!container) return;
         this.activeCategory = category;
-        const normalize = value => String(value || '').normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').toLowerCase().trim();
+        const normalize = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
         const query = normalize(this.selectorSearch);
         const filtered = this.products.filter(product => {
             const matchesCategory = category === 'all' || product.category === category;
