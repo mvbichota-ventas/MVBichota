@@ -1094,3 +1094,82 @@
     .combo-fab { transition: none; }
     .combo-fab:hover { transform: none; }
 }
+
+
+/* ================================================
+   Selector premium MV Bichota · mejoras visuales
+   ================================================ */
+.combo-selector__header { gap: 18px; padding: 18px clamp(16px,2vw,30px); background:#fff; }
+.combo-selector__header-main { display:flex; flex-direction:column; align-items:flex-start; gap:10px; min-width:0; }
+.combo-selector__header h3 { display:flex; align-items:center; gap:12px; font-family:Inter, sans-serif; font-size:clamp(1rem,1.35vw,1.25rem); font-weight:750; letter-spacing:-.025em; color:#171717; }
+.combo-selector__header h3 .combo-brand-icon { width:34px; height:34px; object-fit:contain; flex:none; }
+.combo-selector__home { display:inline-flex; align-items:center; gap:7px; min-height:36px; padding:7px 13px; border:1px solid #ead1d1; border-radius:9px; background:#fff8f8; color:#970000; font-size:.88rem; font-weight:700; text-decoration:none; transition:background .18s ease,transform .18s ease; }
+.combo-selector__home:hover { background:#fbeaea; transform:translateY(-1px); }
+.combo-selector__home svg { width:17px; height:17px; }
+.combo-selector__categories { padding:12px clamp(14px,2vw,28px); gap:9px; }
+.combo-selector__cat { padding:10px 17px; font-size:.9rem; font-weight:650; }
+.combo-selector__search { display:flex; align-items:center; gap:10px; margin:14px clamp(14px,2vw,28px) 0; padding:0 15px; min-height:48px; border:1px solid #e6e6e6; border-radius:12px; background:#fff; color:#858585; box-shadow:0 2px 8px rgba(0,0,0,.035); }
+.combo-selector__search:focus-within { border-color:#a00000; box-shadow:0 0 0 3px rgba(160,0,0,.09); }
+.combo-selector__search > svg { width:19px; height:19px; flex:none; color:#990000; }
+.combo-selector__search input { width:100%; min-width:0; height:46px; border:0; outline:0; background:transparent; color:#202020; font:500 .94rem Inter,sans-serif; }
+.combo-selector__search input::placeholder { color:#999; }
+.combo-selector__search button { display:flex; align-items:center; justify-content:center; border:0; background:transparent; color:#777; cursor:pointer; }
+.combo-selector__search button[hidden] { display:none; }
+.combo-selector__search button svg { width:17px; height:17px; }
+.combo-selector__products { padding:16px clamp(14px,2vw,28px); grid-template-columns:repeat(auto-fill,minmax(285px,1fr)); gap:14px; }
+.combo-selector__product { min-width:0; min-height:124px; padding:13px; gap:13px; border:1px solid #ededed; border-radius:15px; background:#fff; box-shadow:0 2px 9px rgba(20,20,20,.035); }
+.combo-selector__product:hover { border-color:#d6aaaa; box-shadow:0 7px 20px rgba(70,0,0,.075); transform:translateY(-1px); }
+.combo-selector__product.in-combo { border:1.5px solid #a00000; background:#fffafa; }
+.combo-selector__product img { width:82px; height:82px; border-radius:12px; object-fit:cover; background:#f2f2f2; }
+.combo-selector__product-info { display:flex; flex-direction:column; justify-content:center; gap:6px; }
+.combo-selector__product-info h4 { font-family:Inter,sans-serif; font-size:.98rem; font-weight:700; line-height:1.28; letter-spacing:-.015em; color:#202020; }
+.combo-selector__product-price { font-size:.94rem; line-height:1.35; font-weight:750; color:#970000; font-variant-numeric:tabular-nums; }
+.combo-selector__product-actions { margin-left:auto; }
+.combo-selector__add-btn { min-height:42px; padding:10px 14px; border-radius:10px; font-size:.88rem; white-space:nowrap; background:#970000; }
+.combo-selector__qty { gap:7px; }
+.combo-selector__qty-btn { width:36px; height:36px; border-width:1.5px; font-size:1.15rem; font-weight:700; }
+.combo-selector__qty span { min-width:22px; font-weight:750; color:#202020; }
+.combo-selector__selected { display:flex; flex-direction:column; gap:10px; padding:12px clamp(14px,2vw,28px); border-top:1px solid #eee; background:#fff; }
+.combo-selector__selected-heading { display:flex; align-items:center; justify-content:space-between; gap:10px; color:#252525; font-size:.86rem; }
+.combo-selector__selected-heading strong { font-size:.95rem; font-weight:800; }
+.combo-selector__selected-heading span { color:#777; font-size:.8rem; }
+.combo-selector__selected-list { display:flex; align-items:center; gap:9px; overflow-x:auto; padding:2px 1px 5px; }
+.combo-selector__selected-item { position:relative; flex:none; width:54px; height:54px; padding:3px; border:1px solid #e7d0d0; border-radius:11px; background:#fff; cursor:pointer; }
+.combo-selector__selected-item img { display:block; width:100%; height:100%; border-radius:8px; object-fit:cover; background:#f1f1f1; }
+.combo-selector__selected-qty { position:absolute; top:-6px; right:-6px; min-width:20px; height:20px; padding:0 5px; display:grid; place-items:center; border:2px solid #fff; border-radius:20px; background:#970000; color:#fff; font-size:.7rem; font-weight:800; }
+.combo-selector__selected-empty { color:#888; font-size:.8rem; padding:2px 0; }
+.combo-selector__empty { grid-column:1/-1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; min-height:180px; color:#777; text-align:center; }
+.combo-selector__empty svg { width:30px; height:30px; color:#a00000; }
+.combo-selector__empty strong { color:#333; }
+.combo-selector__footer { padding:13px clamp(14px,2vw,28px); }
+.combo-selector__summary span:first-child { font-size:.82rem; font-weight:600; }
+.combo-selector__summary span:last-child { font-size:1.45rem; font-weight:800; letter-spacing:-.03em; }
+.combo-selector__view-btn { min-height:48px; padding:12px 22px; border-radius:11px; background:#970000; font-weight:750; }
+@media (min-width:769px) {
+ .combo-selector__container { width:100%; }
+ .combo-selector__header { min-height:112px; }
+ .combo-selector__home { min-height:38px; }
+ .combo-selector__products { grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); }
+}
+@media (max-width:768px) {
+ .combo-selector__header { padding:13px 15px; }
+ .combo-selector__header-main { gap:8px; }
+ .combo-selector__header h3 { font-size:1rem; }
+ .combo-selector__header h3 .combo-brand-icon { width:29px; height:29px; }
+ .combo-selector__home { min-height:34px; padding:6px 10px; font-size:.82rem; }
+ .combo-selector__categories { padding:10px 12px; }
+ .combo-selector__products { grid-template-columns:1fr; padding:12px; gap:10px; }
+ .combo-selector__product { min-height:100px; padding:10px; gap:10px; }
+ .combo-selector__product img { width:70px; height:70px; }
+ .combo-selector__product-info h4 { font-size:.9rem; }
+ .combo-selector__product-price { font-size:.86rem; }
+ .combo-selector__add-btn { padding:9px 11px; font-size:.8rem; }
+ .combo-selector__qty-btn { width:32px; height:32px; }
+ .combo-selector__selected { padding:10px 12px; }
+ .combo-selector__selected-item { width:48px; height:48px; }
+ .combo-selector__footer { padding:10px 12px; }
+ .combo-selector__view-btn { min-height:44px; padding:10px 14px; font-size:.86rem; }
+}
+@media (prefers-reduced-motion:reduce) {
+ .combo-selector__product,.combo-selector__home { transition:none; }
+}
