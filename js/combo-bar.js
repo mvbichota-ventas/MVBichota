@@ -285,13 +285,13 @@ class ComboBuilder {
             </div>
             <div class="combo-selector__selected-list">
                 ${this.comboItems.map(item => `
-                    <button type="button" class="combo-selector__selected-item" data-id="${item.id}" title="${item.name} · ${item.quantity} unidad(es)" aria-label="${item.name}, cantidad ${item.quantity}">
-                        <span class="combo-selector__selected-thumb">
+                    <div class="combo-selector__selected-item" data-id="${item.id}">
+                        <button type="button" class="combo-selector__selected-thumb" title="Quitar una unidad de ${item.name}" aria-label="Quitar una unidad de ${item.name}">
                             <img src="${item.image || ''}" alt="" onerror="this.src='https://via.placeholder.com/64?text=+'">
                             <span class="combo-selector__selected-qty">${item.quantity}</span>
-                        </span>
+                        </button>
                         <span class="combo-selector__selected-name">${item.name}</span>
-                    </button>
+                    </div>
                 `).join('')}
             </div>`;
     }
@@ -656,7 +656,7 @@ class ComboBuilder {
         const clearSearch = document.getElementById('comboSelectorSearchClear');
         if (clearSearch) clearSearch.addEventListener('click', () => { this.selectorSearch = ''; if (searchInput) { searchInput.value = ''; searchInput.focus(); } this.renderSelectorProducts(this.activeCategory); });
         const selectedStrip = document.getElementById('comboSelectorSelected');
-        if (selectedStrip) selectedStrip.addEventListener('click', event => { const item = event.target.closest('.combo-selector__selected-item'); if (item) { const product = this.comboItems.find(entry => entry.id === item.dataset.id); if (product) this.updateQuantity(product.id, -1); } });
+        if (selectedStrip) selectedStrip.addEventListener('click', event => { const thumb = event.target.closest('.combo-selector__selected-thumb'); if (thumb) { const item = thumb.closest('.combo-selector__selected-item'); const product = item && this.comboItems.find(entry => entry.id === item.dataset.id); if (product) this.updateQuantity(product.id, -1); } });
 
         const selectorClose = document.getElementById('comboSelectorClose');
         if (selectorClose) {
