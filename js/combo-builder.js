@@ -242,7 +242,8 @@ class ComboBuilder {
                 price: product.price,
                 unit: product.unit,
                 quantity: 1,
-                category: product.category
+                category: product.category,
+                image: product.image || product.imageUrl || product.thumbnail || ''
             });
         }
 
