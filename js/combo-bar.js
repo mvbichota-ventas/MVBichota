@@ -10,6 +10,8 @@ class ComboBuilder {
         this.STORAGE_KEY = 'mvbichota_combo';
         this.isPanelOpen = false;
         this.isSelectorOpen = false;
+        this.activeCategory = 'all';
+        this.selectorSearch = '';
         
         this.init();
     }
@@ -141,7 +143,7 @@ class ComboBuilder {
         selector.innerHTML = `
             <div class="combo-selector__container">
                 <div class="combo-selector__header">
-                    <div class="combo-selector__header-main"><h3><img class="combo-brand-icon" src="assets/images/mv-bichota-icon.webp" alt=""> Selecciona productos para tu combo</h3><a class="combo-selector__home" href="#inicio" id="comboSelectorHome">← Volver al inicio</a></div>
+                    <div class="combo-selector__header-main"><h3><img class="combo-brand-icon" src="assets/images/mv-bichota-icon.webp" alt=""> Selecciona productos para tu combo</h3><a class="combo-selector__home" href="index.html#inicio" id="comboSelectorHome"><i data-lucide="arrow-left"></i><span>Volver al inicio</span></a></div>
                     <button class="combo-selector__close" id="comboSelectorClose">
                         <i data-lucide="x"></i>
                     </button>
@@ -149,9 +151,15 @@ class ComboBuilder {
                 <div class="combo-selector__categories" id="comboSelectorCategories">
                     <button class="combo-selector__cat active" data-category="all">Todos</button>
                 </div>
+                <label class="combo-selector__search" for="comboSelectorSearch">
+                    <i data-lucide="search"></i>
+                    <input id="comboSelectorSearch" type="search" placeholder="Buscar productos por nombre..." autocomplete="off">
+                    <button type="button" id="comboSelectorSearchClear" aria-label="Limpiar búsqueda" hidden><i data-lucide="x"></i></button>
+                </label>
                 <div class="combo-selector__products" id="comboSelectorProducts">
                     <!-- Products will be loaded here -->
                 </div>
+                <section class="combo-selector__selected" id="comboSelectorSelected" aria-label="Productos agregados al combo"></section>
                 <div class="combo-selector__footer">
                     <div class="combo-selector__summary">
                         <span id="selectorCount">0 productos</span>
@@ -196,20 +204,25 @@ class ComboBuilder {
             btn.addEventListener('click', () => {
                 container.querySelectorAll('.combo-selector__cat').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                this.renderSelectorProducts(btn.dataset.category);
+                this.activeCategory = btn.dataset.category;
+                this.renderSelectorProducts(this.activeCategory);
             });
         });
     }
 
-    renderSelectorProducts(category = 'all') {
+    renderSelectorProducts(category = this.activeCategory || 'all') {
         const container = document.getElementById('comboSelectorProducts');
         if (!container) return;
+        this.activeCategory = category;
+        const normalize = value => String(value || '').normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').toLowerCase().trim();
+        const query = normalize(this.selectorSearch);
+        const filtered = this.products.filter(product => {
+            const matchesCategory = category === 'all' || product.category === category;
+            const matchesSearch = !query || normalize(product.name).includes(query) || normalize(product.category).includes(query) || normalize(product.unit).includes(query);
+            return matchesCategory && matchesSearch;
+        });
         
-        const filtered = category === 'all' 
-            ? this.products 
-            : this.products.filter(p => p.category === category);
-        
-        container.innerHTML = filtered.map(product => {
+        container.innerHTML = filtered.length ? filtered.map(product => {
             const inCombo = this.comboItems.find(item => item.id === product.id);
             const qty = inCombo ? inCombo.quantity : 0;
             
@@ -236,7 +249,7 @@ class ComboBuilder {
                     </div>
                 </div>
             `;
-        }).join('');
+        }).join('') : '<div class="combo-selector__empty"><i data-lucide="search-x"></i><strong>No encontramos productos</strong><span>Prueba con otro nombre o categoría</span></div>';
         
         // Add click events
         container.querySelectorAll('.combo-selector__add-btn').forEach(btn => {
@@ -253,10 +266,35 @@ class ComboBuilder {
         
         // Update footer summary
         this.updateSelectorSummary();
+        this.renderSelectorSelected();
+        const clearSearch = document.getElementById('comboSelectorSearchClear');
+        if (clearSearch) clearSearch.hidden = !this.selectorSearch;
         
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
         }
+    }
+
+    renderSelectorSelected() {
+        const container = document.getElementById('comboSelectorSelected');
+        if (!container) return;
+        if (!this.comboItems.length) {
+            container.innerHTML = '<div class="combo-selector__selected-empty">Tus productos agregados aparecerán aquí</div>';
+            return;
+        }
+        container.innerHTML = `
+            <div class="combo-selector__selected-heading">
+                <strong>Tu combo</strong>
+                <span>${this.getComboUnitCount()} unidades seleccionadas</span>
+            </div>
+            <div class="combo-selector__selected-list">
+                ${this.comboItems.map(item => `
+                    <button type="button" class="combo-selector__selected-item" data-id="${item.id}" title="${item.name} · ${item.quantity} unidad(es)" aria-label="${item.name}, cantidad ${item.quantity}">
+                        <img src="${item.image || ''}" alt="" onerror="this.src='https://via.placeholder.com/64?text=+'">
+                        <span class="combo-selector__selected-qty">${item.quantity}</span>
+                    </button>
+                `).join('')}
+            </div>`;
     }
 
     updateSelectorSummary() {
@@ -614,6 +652,13 @@ class ComboBuilder {
         if (selectorHome) selectorHome.addEventListener('click', () => this.closeSelector());
 
         // Selector close button
+        const searchInput = document.getElementById('comboSelectorSearch');
+        if (searchInput) searchInput.addEventListener('input', () => { this.selectorSearch = searchInput.value; this.renderSelectorProducts(this.activeCategory); });
+        const clearSearch = document.getElementById('comboSelectorSearchClear');
+        if (clearSearch) clearSearch.addEventListener('click', () => { this.selectorSearch = ''; if (searchInput) { searchInput.value = ''; searchInput.focus(); } this.renderSelectorProducts(this.activeCategory); });
+        const selectedStrip = document.getElementById('comboSelectorSelected');
+        if (selectedStrip) selectedStrip.addEventListener('click', event => { const item = event.target.closest('.combo-selector__selected-item'); if (item) { const product = this.comboItems.find(entry => entry.id === item.dataset.id); if (product) this.updateQuantity(product.id, -1); } });
+
         const selectorClose = document.getElementById('comboSelectorClose');
         if (selectorClose) {
             selectorClose.addEventListener('click', () => this.closeSelector());
