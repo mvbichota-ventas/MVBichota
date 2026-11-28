@@ -286,8 +286,11 @@ class ComboBuilder {
             <div class="combo-selector__selected-list">
                 ${this.comboItems.map(item => `
                     <button type="button" class="combo-selector__selected-item" data-id="${item.id}" title="${item.name} · ${item.quantity} unidad(es)" aria-label="${item.name}, cantidad ${item.quantity}">
-                        <img src="${item.image || ''}" alt="" onerror="this.src='https://via.placeholder.com/64?text=+'">
-                        <span class="combo-selector__selected-qty">${item.quantity}</span>
+                        <span class="combo-selector__selected-thumb">
+                            <img src="${item.image || ''}" alt="" onerror="this.src='https://via.placeholder.com/64?text=+'">
+                            <span class="combo-selector__selected-qty">${item.quantity}</span>
+                        </span>
+                        <span class="combo-selector__selected-name">${item.name}</span>
                     </button>
                 `).join('')}
             </div>`;
