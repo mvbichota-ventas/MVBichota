@@ -124,13 +124,9 @@ class ComboBuilder {
         `;
         document.body.appendChild(fab);
 
-        fab.addEventListener('click', () => {
-            if (this.comboItems.length > 0) {
-                this.openPanel();
-            } else {
-                this.toggleSelector();
-            }
-        });
+        // El botón flotante siempre abre el catálogo para seguir agregando productos.
+        // El resumen del combo se consulta desde "VER MI COMBO".
+        fab.addEventListener('click', () => this.toggleSelector());
     }
 
     // ================================================
