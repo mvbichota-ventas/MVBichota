@@ -1173,3 +1173,89 @@
 @media (prefers-reduced-motion:reduce) {
  .combo-selector__product,.combo-selector__home { transition:none; }
 }
+
+
+/* Ajuste de distribución: imagen, nombre/precio y acción siempre alineados */
+.combo-selector__product {
+    display: grid !important;
+    grid-template-columns: 76px minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 14px;
+}
+.combo-selector__product > img {
+    grid-column: 1;
+    grid-row: 1;
+    width: 76px;
+    height: 76px;
+    min-width: 76px;
+    object-fit: cover;
+}
+.combo-selector__product-info {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+.combo-selector__product-info h4 {
+    margin: 0;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+.combo-selector__product-price {
+    margin: 3px 0 0;
+    line-height: 1.35;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+.combo-selector__product-actions {
+    grid-column: 3;
+    grid-row: 1;
+    margin-left: 0;
+    justify-self: end;
+    white-space: nowrap;
+}
+.combo-selector__add-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-width: 108px;
+}
+.combo-selector__qty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.combo-selector__products {
+    align-content: start;
+}
+@media (max-width: 520px) {
+    .combo-selector__product {
+        grid-template-columns: 62px minmax(0, 1fr);
+        row-gap: 8px;
+        column-gap: 11px;
+    }
+    .combo-selector__product > img {
+        width: 62px;
+        height: 62px;
+        min-width: 62px;
+    }
+    .combo-selector__product-info {
+        grid-column: 2;
+        grid-row: 1;
+    }
+    .combo-selector__product-actions {
+        grid-column: 2;
+        grid-row: 2;
+        justify-self: start;
+    }
+    .combo-selector__add-btn {
+        min-height: 36px;
+        min-width: 100px;
+        padding: 8px 12px;
+    }
+    .combo-selector__qty-btn {
+        width: 32px;
+        height: 32px;
+    }
+}
